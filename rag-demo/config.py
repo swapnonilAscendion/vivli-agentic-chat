@@ -32,14 +32,14 @@ class AzureConfig:
     TEMPERATURE = 0.7
 
     # Thresholds
-    CONFIDENCE_THRESHOLD = 0.6
-    RELEVANCE_THRESHOLD = 0.3  # Lowered for keyword search (was 0.6 for vector search)
+    CONFIDENCE_THRESHOLD = 0.3  # Lower threshold to allow more documents through (vector search scores are typically lower)
+    RELEVANCE_THRESHOLD = 0.1  # Minimum relevance score for documents to be included
     TOP_K_DOCUMENTS = 5
 
     # Intent classification thresholds
-    INTENT_HIGH_CONFIDENCE = 0.25   # High confidence threshold
-    INTENT_LOW_CONFIDENCE = 0.1     # Low confidence threshold
-    INTENT_MULTI_THRESHOLD = 0.2    # Multi-intent threshold
+    INTENT_HIGH_CONFIDENCE = 0.15   # High confidence threshold (lowered for better intent detection)
+    INTENT_LOW_CONFIDENCE = 0.05    # Low confidence threshold
+    INTENT_MULTI_THRESHOLD = 0.08   # Multi-intent threshold (lowered to catch more intent matches)
 
     @staticmethod
     def validate():

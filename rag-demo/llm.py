@@ -77,6 +77,38 @@ Answer:"""
             user_prompt=prompt,
         )
 
+    async def generate_general_response(
+        self, query: str
+    ) -> str:
+        """
+        Generate response for general conversation (no documents).
+        Let LLM handle greetings, questions, and requests naturally.
+
+        Args:
+            query: User's query
+
+        Returns:
+            Generated response text
+        """
+        system_prompt = """You are a helpful Vivli chatbot assistant.
+
+The user's question didn't match our knowledge base, but that's okay.
+- If they're greeting you (hi, hello, etc), respond warmly and let them know what you can help with
+- If they're asking something, try to help if you can, or ask for clarification
+- Suggest relevant topics about data requests, form checks, and research access
+
+Keep responses concise and helpful. Mention you can help with questions about:
+- Data requests and how to submit them
+- Form check process
+- Eligibility and requirements
+- Timeline and approval process"""
+
+        result = await self._generate(
+            system_prompt=system_prompt,
+            user_prompt=f"User: {query}",
+        )
+        return result.answer
+
     async def generate_data_request_response(
         self,
         query: str,

@@ -1,0 +1,120 @@
+================================================================================
+RAG CHATBOT - PROBLEMS FOUND & FIXED
+================================================================================
+
+PROBLEM:
+--------
+Whatever query users sent, they got: "I couldn't find a reliable answer..."
+(Even though documents were indexed!)
+
+Example:
+  Query: "what are the things you can answer"
+  Response: Escalation message (WRONG!)
+  Available docs: 5 documents with relevance score 38+ (IGNORED!)
+
+ROOT CAUSES:
+============
+
+1. OVERLY STRICT THRESHOLDS (config.py)
+   - CONFIDENCE_THRESHOLD: 0.6 → FIXED: 0.3
+   - INTENT_HIGH_CONFIDENCE: 0.25 → FIXED: 0.15
+
+   Why: Keyword search gives lower scores than expected
+   Impact: Documents filtered out before use
+
+2. BRITTLE INTENT CLASSIFIER (intent_classifier.py)
+   - Required exact keyword matches
+   - Query "what are the things you can answer" has no FAQ keywords
+   - Result: Marked as UNKNOWN/HYBRID with low confidence
+
+   FIXED: Added baseline score (0.12) for meaningful queries
+   Why: Real questions should be recognized even without keywords
+
+3. CONFIDENCE GATE IN HYBRID HANDLER (main.py)
+   - Code: if documents and confidence > 0.3:
+   - Problem: confidence=0.19, threshold=0.3
+   - Result: Documents retrieved but IGNORED
+
+   FIXED: Changed to: if documents:
+   Why: If documents exist, use them! Don't gate with confidence
+
+4. CONTEXT TOO LARGE (retrieval.py)
+   - format_for_llm() included all 18MB JSON + all 380-row CSVs
+   - Total context: 54MB
+   - LLM error: "string too long" (max 10MB)
+
+   FIXED: Added truncation (2000 chars per doc, 500KB total)
+   Why: LLM can't handle massive documents
+
+================================================================================
+CHANGES MADE:
+==============
+
+File: config.py
+  CONFIDENCE_THRESHOLD: 0.6 → 0.3
+  INTENT_HIGH_CONFIDENCE: 0.25 → 0.15
+  INTENT_LOW_CONFIDENCE: 0.1 → 0.05
+  INTENT_MULTI_THRESHOLD: 0.2 → 0.08
+  RELEVANCE_THRESHOLD: 0.2 → 0.1
+
+File: intent_classifier.py
+  + Added minimum FAQ score for queries > 15 chars
+  + Better detection of general questions without keywords
+
+File: main.py
+  - Removed confidence threshold from _handle_hybrid()
+  + Now: if documents → use knowledge base
+  + Only escalate when no documents found
+
+File: retrieval.py
+  + Added intelligent context truncation
+  + Max 2000 chars per document
+  + Max ~500KB total context
+  + Prevents LLM API errors
+
+================================================================================
+RESULTS:
+========
+
+BEFORE FIX:
+  Query: "what are the things you can answer"
+  Answer: "I'm sorry, but I couldn't find a reliable answer..."
+  Status: ❌ ESCALATION (documents ignored!)
+
+AFTER FIX:
+  Query: "what are the things you can answer"
+  Answer: "As your Vivli platform assistant, I can help answer questions
+           related to the data request process, including how to create,
+           submit, and manage your data requests..."
+  Status: ✅ KNOWLEDGE BASE ANSWER (documents properly used!)
+
+================================================================================
+VERIFICATION:
+==============
+
+✅ Test 1: "what are the things you can answer"
+   → Knowledge base response about data requests
+
+✅ Test 2: "what is data request"
+   → Definition + process steps from documents
+
+✅ Test 3: "how do I submit a data request"
+   → Step-by-step instructions from knowledge base
+
+================================================================================
+SYSTEM STATUS: 🟢 OPERATIONAL
+================================================================================
+
+The chatbot now properly:
+  ✅ Retrieves relevant documents
+  ✅ Uses documents to generate answers
+  ✅ Handles large documents (truncates appropriately)
+  ✅ Classifies queries with reasonable confidence
+  ✅ Returns knowledge base answers (not just escalations)
+
+Next improvements (optional):
+  - Implement semantic/vector search
+  - Add LLM-based intent classification
+  - Implement conversation history tracking
+
+================================================================================

@@ -141,25 +141,39 @@ async def chat(request: ChatRequest) -> ChatResponse:
         )
 
         # Step 3: Generate response based on intent
-        if classification.intent == "FAQ":
-            answer = await _handle_faq(query_id, request.query, filtered_docs)
+        # Strategy: Prefer knowledge base if documents available, fall back to LLM for conversational replies
 
-        elif classification.intent == "DATA_REQUEST_RELATED":
-            answer = _create_data_request_response(
-                request.query, classification.confidence
-            )
+        # Case 1: Documents found - always try to use them, regardless of intent
+        if filtered_docs:
+            logger.info(f"[{query_id}] Documents found ({len(filtered_docs)}) - using knowledge base")
 
-        elif classification.intent == "HYBRID":
-            answer = await _handle_hybrid(
-                query_id, request.query, filtered_docs, classification.confidence
-            )
+            if classification.intent == "ESCALATION":
+                # Even escalation queries can be answered with docs
+                answer = await _handle_faq(query_id, request.query, filtered_docs)
+                classification.intent = "FAQ"
+            elif classification.intent == "DATA_REQUEST_RELATED":
+                answer = await _handle_faq(query_id, request.query, filtered_docs)
+            elif classification.intent == "HYBRID":
+                answer = await _handle_hybrid(
+                    query_id, request.query, filtered_docs, classification.confidence
+                )
+            else:  # FAQ or UNKNOWN with documents
+                answer = await _handle_faq(query_id, request.query, filtered_docs)
+                classification.intent = "FAQ"
 
-        elif classification.intent == "ESCALATION":
-            answer = response_formatter.format_escalation_response()
+        # Case 2: No documents found - let LLM handle it conversationally
+        else:
+            logger.info(f"[{query_id}] No documents found - using LLM for conversational response")
 
-        else:  # UNKNOWN
-            answer = response_formatter.format_escalation_response()
-            classification.intent = "ESCALATION"
+            if classification.intent == "ESCALATION":
+                answer = response_formatter.format_escalation_response()
+            elif classification.intent == "DATA_REQUEST_RELATED":
+                answer = _create_data_request_response(
+                    request.query, classification.confidence
+                )
+            else:  # UNKNOWN or FAQ with no documents - ask LLM
+                answer = await _handle_unknown_query(query_id, request.query)
+                classification.intent = "FAQ"
 
         # Step 4: Format sources
         sources = []
@@ -208,6 +222,31 @@ async def chat(request: ChatRequest) -> ChatResponse:
         )
 
 
+async def _handle_unknown_query(query_id: str, query: str) -> str:
+    """
+    Let LLM handle queries with no documents.
+    The LLM can intelligently:
+    - Answer greetings naturally
+    - Ask for clarification
+    - Suggest what it can help with
+    - Or handle any other conversation naturally
+
+    Args:
+        query_id: Query ID for logging
+        query: User query
+
+    Returns:
+        LLM-generated response
+    """
+    try:
+        response = await llm_client.generate_general_response(query)
+        logger.info(f"[{query_id}] LLM handled unknown query")
+        return response
+    except Exception as e:
+        logger.error(f"[{query_id}] Error in LLM handling: {str(e)}")
+        return "I'm happy to help! Feel free to ask me about data requests, form checks, or any other questions about the Vivli platform."
+
+
 async def _handle_faq(query_id: str, query: str, documents) -> str:
     """Handle FAQ query"""
     if not documents:
@@ -232,13 +271,14 @@ async def _handle_hybrid(
     query_id: str, query: str, documents, classification_confidence: float
 ) -> str:
     """Handle hybrid query (data request + FAQ)"""
-    # For demo, just handle as FAQ if we have documents, else escalate
-    if documents and classification_confidence > AzureConfig.CONFIDENCE_THRESHOLD:
+    # Always use documents if available, don't gatekeep with confidence score
+    if documents:
         context = retrieval.format_for_llm(documents)
         result = await llm_client.generate_faq_response(query, context)
         if result.answer:
             return response_formatter.format_faq_response(result.answer, [])
 
+    # Only escalate if we truly have no documents
     return response_formatter.format_escalation_response()
 
 
