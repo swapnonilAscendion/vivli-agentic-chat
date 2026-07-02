@@ -1,0 +1,81 @@
+﻿================================================================================
+VIVLI CHATBOT - EMBEDDED LINKS FOR WEB SCRAPING & CRAWLING
+================================================================================
+Source: metadata file for the Vivli category json aka Vivli Intent Taxonomy document.docx
+Extraction Date: 2026-06-29
+Total Links: 22
+
+================================================================================
+GURU CARDS (21 Links)
+================================================================================
+These are internal Vivli knowledge base articles covering various topics.
+Format: https://app.getguru.com/card/{CARD_ID}/{SLUG}
+
+1. Form Validation Issues
+   https://app.getguru.com/card/TgqdMkyc/Form-check-failed-downloadable-studies-only
+   https://app.getguru.com/card/To5dMgxc/Form-check-failed
+   https://app.getguru.com/card/id4yM6MT/Form-check-Revision-Follow-Up
+   https://app.getguru.com/card/ie56j4pT/Status-of-form-check-during-form-check-review-stage
+
+2. Request & Enquiry Management
+   https://app.getguru.com/card/T74MLx5c/If-a-researcher-initiates-the-withdrawal
+   https://app.getguru.com/card/Tjqpeppc/What-is-the-status-of-my-enquiry
+   https://app.getguru.com/card/ce56j8Ri/Status-check-researcher-hasnt-submitted
+   https://app.getguru.com/card/TqpMddgc/Enquiry-for-JJ-Studies
+   https://app.getguru.com/card/i74Mdd9T/How-to-enquire-about-a-study-not-listed-on-the-platform
+
+3. Data Access & Download
+   https://app.getguru.com/card/T84rrG5c/Can-I-download-the-data-For-profit-members
+   https://app.getguru.com/card/id8pegMT/When-a-researcher-asks-how-they-can-download-a-list-of-all-studies-from-the-platform
+
+4. Timeline & SLA Questions
+   https://app.getguru.com/card/TyprGrrc/After-30-days-and-still-no-response-from-abandoned-request
+   https://app.getguru.com/card/cEGzqoLi/Questions-about-enquiry-timeline
+   https://app.getguru.com/card/copxg7qi/For-general-timeline-question
+
+5. Submission Process
+   https://app.getguru.com/card/cBoExLLi/PI-submits-responses-via-chat-direct-PI-to-submit-request
+   https://app.getguru.com/card/cp96jkGi/Researcher-cannot-submit-request
+
+6. Account Management & Changes
+   https://app.getguru.com/card/ijqpeKeT/Changes-made-on-researcher-behalf
+   https://app.getguru.com/card/i69pjkLT/Reset-request-to-draft
+   https://app.getguru.com/card/injdM6yT/Can-I-add-studies-later
+
+7. Legal & Compliance
+   https://app.getguru.com/card/cjqpe8Ki/DUA-questions-during-form-check-stage
+
+8. Standards & Terminology
+   https://app.getguru.com/card/coMzpd5i/MedDRA-requirements
+
+================================================================================
+EXTERNAL RESOURCES (1 Link)
+================================================================================
+
+Google Sheets - Reference Data & Resources
+https://docs.google.com/spreadsheets/d/1GyeXMPrfqEdU2P5-3m4t7skovGRitxsGvo_RSLKcsv4/edit?gid=1557405133#gid=1557405133
+
+================================================================================
+USAGE INSTRUCTIONS FOR RAG PIPELINE
+================================================================================
+
+1. Web Scraping:
+   - Use requests/Selenium to crawl Guru Cards
+   - Extract main content, code snippets, related links
+   - Store metadata: title, URL, category, last_updated
+
+2. Indexing Strategy:
+   - Index by category (Form Validation, Timeline, Data Access, etc.)
+   - Use URLs as document IDs for deduplication
+   - Preserve hierarchy and cross-references
+
+3. Chunking Strategy:
+   - Guru cards: Chunk by section/heading
+   - Google Sheet: Parse tabular data, chunk by rows/tables
+
+4. Link Update Schedule:
+   - Review quarterly for dead links
+   - Check for new Guru cards regularly
+   - Monitor for Google Sheet changes
+
+================================================================================

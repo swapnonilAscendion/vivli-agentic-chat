@@ -1,0 +1,149 @@
+============================================
+FORM VALIDATION DEV NOTES - PSEUDO CODE STYLE
+============================================
+
+From Table 6 (Field Validation Checks):
+
+Example 1: Lead Researcher Name Validation
+──────────────────────────────────────────
+
+Field: Research Team > Lead Researcher > First and Last Name
+
+Dev Notes:
+  rule_id: lead_researcher.name.required
+  ctx: research_team.lead_researcher.first_name
+       research_team.lead_researcher.last_name
+
+  Validation Messages: None (spec).
+  Fields also used in peking_embargo check.
+
+INTERPRETATION:
+- rule_id: Unique identifier for this validation rule
+- ctx: Context path to the field being validated (using dot notation)
+- Validation Messages: What message to show if validation fails
+- Additional notes about related checks
+
+
+Example 2: Expanded Dev Notes Format
+──────────────────────────────────────
+
+Based on the pattern observed:
+
+rule_id: [descriptive_rule_name]
+field_path: [path.to.field]
+field_type: [string|number|array|object]
+required: [yes|no]
+validation_logic:
+  - Check 1: [condition]
+  - Check 2: [condition]
+  - Check N: [condition]
+response_templates:
+  success: [standard response from Guru]
+  failure: [standard response from Guru - link to Guru card]
+route_action:
+  - if [condition]: route to [destination]
+  - else: continue to next validation
+context_dependencies:
+  - related_field_1
+  - related_field_2
+audit_notes: [notes for future ML training]
+
+
+Example 3: Pre-Form Check Logic (from table content)
+──────────────────────────────────────────────────
+
+Validation Rule: Does the request include ONLY Tempus studies?
+
+Dev Notes interpretation:
+  rule_id: request.data_contributor.tempus_only
+  field_path: request.data_contributors[]
+
+  validation_logic:
+    - Check: Are ALL selected data contributors = "Tempus"?
+    - Check: Is the request type one of "full_validation" categories?
+
+  conditional_response:
+    - if (all_contributors == "Tempus") AND (request_type != "collaboration"):
+        action: "continue_validation"  // Skip escalation
+        response: "" // No message to requester
+    - else:
+        action: "route_to_admin"
+        response: [Guru card: Tempus-only-request]
+
+  guru_reference: https://app.getguru.com/card/To5dxdac/Tempus-studies
+
+
+Example 4: Complex Multi-Field Validation
+──────────────────────────────────────────
+
+Validation Rule: Genomic Data Clarification Needed
+
+Dev Notes interpretation:
+  rule_id: data_request.genomic_data.clarification
+  context_fields:
+    - data_categories.genomic_data (boolean)
+    - data_specifications.genomic_type (enum: rna_seq | markers)
+
+  validation_logic:
+    - Check: is_genomic_data_requested = true
+    - Check: genomic_type is NOT (explicitly "rna_seq" OR "markers")
+
+  if_validation_fails:
+    response_type: "clarification_request"
+    proposed_response: [from Guru card]
+    guru_reference: https://app.getguru.com/card/To5dxdac/Clarification-of-data-requested-genomic
+    action: "send_message_to_requester"
+    field_flag: "genomic_data" (RED X)
+
+  exception:
+    if (data_contributor == "Tempus"):
+      action: "skip_check"  // Allow form to pass validation
+      reason: "Tempus-only requests can proceed with genomic data"
+
+
+============================================
+PSEUDO CODE STYLE SUMMARY
+============================================
+
+The Dev Notes use a structured format with:
+
+1. IDENTIFIERS:
+   - rule_id: [module.field.rule_name]
+   - field_path: [path.to.field] (using dot notation)
+
+2. CONTEXT:
+   - ctx: [related_fields]
+   - context_fields: [array of related fields]
+   - context_dependencies: [list of other fields needed]
+
+3. LOGIC:
+   - validation_logic: [list of checks]
+   - conditional_response: [if/else decision tree]
+   - exception: [special cases]
+
+4. ACTIONS:
+   - action: [continue_validation | route_to_admin | send_message_to_requester]
+   - response: [message or Guru reference]
+   - response_templates: [standard messages]
+
+5. REFERENCES:
+   - guru_reference: [URL to Guru card]
+   - field_flag: [RED X | GREEN TICK]
+   - audit_notes: [notes for training]
+
+6. STRUCTURE:
+   - Uses indentation for hierarchy
+   - Uses arrows (→) for flow
+   - Uses array notation: field[]
+   - Uses dot notation: parent.child.property
+   - Uses comparison operators: ==, !=, AND, OR
+
+
+KEY FORMATTING PRINCIPLES:
+- Clear rule identifiers (snake_case)
+- Hierarchical structure with indentation
+- Conditional logic (if/else)
+- Reference to external sources (Guru cards)
+- Action directives (route, continue, skip)
+- Field paths and context
+- Exception handling

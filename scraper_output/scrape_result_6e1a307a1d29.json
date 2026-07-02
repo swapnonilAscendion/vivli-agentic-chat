@@ -1,0 +1,108 @@
+{
+  "execution_id": "6e1a307a1d29",
+  "started_at": "2026-06-30T15:38:13.479742",
+  "completed_at": "2026-06-30T15:38:13.479743",
+  "execution_time_seconds": 29.435441732406616,
+  "source_pdf": {
+    "file_path": "C:\\Users\\swapnonil.mukherjee\\projects\\vivli-chatbot\\resources\\organized-data\\PDFs\\Guides\\2025_01_22-Using-Vivli-to-meet-ICMJE-requirements.pdf",
+    "file_name": "2025_01_22-Using-Vivli-to-meet-ICMJE-requirements.pdf",
+    "page_count": 3,
+    "file_size_bytes": 188368,
+    "text_length": 3101,
+    "links_extracted": 1
+  },
+  "scraping_results": {
+    "total_urls_processed": 5,
+    "successful_scrapes": 2,
+    "failed_scrapes": 0,
+    "duplicate_urls_skipped": 3,
+    "success_rate": "40.0%"
+  },
+  "combined_data": {
+    "all_text": "\n--- Page 1 ---\nUsing Vivli to meet ICMJE Data Sharing Requirements\nIn June of 2017, the International Committee of Medical Journal Editors, or ICMJE, released\nnew requirements for data sharing statements, for submissions to their publications. The ICMJE\nrepresents the most well-respected and influential publications in the biosciences, including the\nNew England Journal of Medicine; the Lancet; Annals of Internal Medicine; the BMJ; and PLOS\nMedicine:\nJanuary 22, 2025\nVersion 2.0\n\n--- Page 2 ---\nThese publications, and the many others which follow their lead, now require the inclusion of a\ndata sharing statement in all submissions for publication. ICMJE publication editors may take\nthese statements into consideration, when making editorial decisions. Researchers should also\nknow that as of 1 January 2019, ICMJE requires inclusion of your data sharing statement at the\ntime of trial registration.\nIn their guidance to researchers, the ICMJE notes that when it comes to data sharing,\n\u201cundecided is not an acceptable answer.\u201d Rather than remaining \u201cundecided,\u201d see the chart\nbelow to learn how to use Vivli in completing your ICMJE data sharing statement:\nICMJE Question How to respond, if using Vivli to share your\ndata:\nWill IPD (and data dictionaries) Yes\nbe made available?\nWhat data in particular will be Final cleaned individual participant-level\nshared? data, *anonymized\nWhat other documents will be Final protocol, statistical analysis plan, and\nmade available? the data dictionary. (Note: additional\ndocuments such as CRFs and analytic code\nmay also be included.)\nWhen will data be made X months /years after study completion\navailable?\nWith whom? Anyone with the relevant skillsets to conduc\nthe analysis, who submitted an approved\nproposal on Vivli.\nProposals are submitted on vivli.org.\nFor what types of analysis? To achieve the aims and objectives in the\nscientific proposal as approved via Vivli.\nJanuary 22, 2025\nVersion 2.0\n\n--- Page 3 ---\nBy what mechanism will data be Data are made available via a secure\nmade available? research environment or downloaded (data\ncontributor to choose appropriate option).\nOnce a request is approved, a Data Use\nAgreement must be executed.\nWhat is the availability of the The dataset(s) from the *DC name* trial(s)\ndata? are made available through a controlled\naccess method that follows best practices of\nsharing human-subjects clinical research\ndata. This method protects participants'\nprivacy and the request has been approved\nby an independent review panel or\naccelerated review (data contributor to\nchoose appropriate option). To request the\ndata, researchers should apply using this\nsame controlled access method\nvia https://vivli.org/\nFor more information or assistance in using Vivli to meet data sharing requirements, email\nsuppport@vivli.org.\n* Vivli partners with Real Life Sciences, Privacy Analytics and Instem, to provide anonymization\nof complete clinical research data at a discounted rate for researchers who store and share\ntheir data on Vivli. Contact support@vivli.org for more information.\nJanuary 22, 2025\nVersion 2.0\n\n\n--- Source: https://vivli.org/ ---\nHome\nAbout\nMembers\nVivli Europe\nNews & Events\nResources\nPortals\nLOG IN\nA global clinical research data sharing\u00a0platform\nThe Vivli team is dedicated to helping researchers share and access data from clinical trials to advance science.\nSEARCH FOR STUDIESSUBMIT YOUR STUDY\n8,000+\nCLINICAL TRIALS\n55+\nMEMBERS\n5.2\nMILLION\nPARTICIPANTS\n530+\nPUBLICATIONS\nOur Members\nWhy we support Vivli\n\u2022\u2022\u2022\u2022\u2022\u2022\u2022\n\t\n\"We are proud we are able to take this step forward in our data sharing program as part of our ongoing data transparency commitments.\"\nJenny Petersen, Director, Clinical Trial Disclosure and Transparency at Alnylam Pharmaceuticals\nVivli 2025 Progress Report\nFULL STORY\nWatch the 2025 Vivli Annual Meeting videos\nFULL STORY\nUpdates & Events\nJUNE 29, 2026\nVivli Platform Version 4.0 Now Available\n\u00bb More\nJUNE 4, 2026\nThe Vivli Global Ambassador Program: Highlights from the Inaugural Cohort\n\u00bb More\nJUNE 3, 2026\nVivli Data Contributor Spotlight: UCSF\u2019s Kaitlin Yee on Navigating Data Sharing Across a Multi-Study Research Initiative\n\u00bb More\n\n\n\n\n\n\n\nSign up for news from Vivli!\n\nSubscribe for updates across research, events, and the Vivli community.\n\nEmail\nFirst Name\nLast Name\nCompany\n\nBy submitting this form, you are consenting to receive marketing emails from: Vivli Communications, Vivli, Inc., Burlington, MA, 01803, US. You can revoke your consent to receive emails at any time by using the SafeUnsubscribe\u00ae link, found at the bottom of every email. Emails are serviced by Constant Contact.\n\nSend\n\nHow To Guide Log In Privacy Cookie Policy EEA Disclosures\n\nContact Us\n\n--- Source: https://vivli.org/about/ ---\nHome\nAbout\nMembers\nVivli Europe\nNews & Events\nResources\nPortals\nLOG IN\nAbout Vivli: Overview\n\nVivli is an independent, non-profit organization that has developed a global data-sharing and analytics platform.\n\nOur focus is on sharing individual participant-level data from completed clinical trials to serve the international research community.\n\nWe act as a neutral broker between data contributor, data user and the wider data sharing community.\n\nOur Platform\n\nThe Vivli platform includes an independent data repository, in-depth search engine and a secure research environment.\n\nUsers can search listed studies, request data sets from data contributors, aggregate data, or share data of their own.\n\nThe enhanced search engine is designed to index clinical trial metadata.\nThe secure research environment includes access to robust analytical tools.\nOur Mission\n\nOur mission is to promote, coordinate, and facilitate scientific sharing and reuse of clinical research data through the creation and implementation of a sustainable global data-sharing enterprise. We act as a neutral broker between data contributor,\u00a0data user and the wider data sharing community.\n\n\u00a0\n\nOur Vision\n\nThe ultimate vision of Vivli is to advance human health through clinical research data sharing, to respect and honor the contributions of clinical research participants.\n\nVivli increases the overall global capacity for effective data sharing, aggregation, re\u00ad-use & analysis of valuable clinical research data towards the ultimate goal of advancing science and improving human health.\n\n\u00a0\n\nHistory\n\nVivli evolved from a project of The Multi-Regional Clinical Trials Center of Brigham and Women\u2019s Hospital and Harvard (MRCT Center) to enhance access to clinical trials data by promoting data sharing and transparency. In 2013, the MRCT Center and a diverse group of global stakeholders embarked on a mission to define, design and launch a solution to global clinical trial data sharing.\n\nSecurity & Certifications\n\nThe Vivli platform was designed and built to ensure the security of the anonymized clinical trial participant data that it hosts. The Vivli platform is built entirely as an application within the Microsoft Azure Cloud, thus taking advantage of the numerous security features developed by Microsoft\u2019s state-of-the art system and processes. Vivli selected Microsoft Azure as they possess some of the most robust compliance offerings of any cloud service provider. Additionally, the Vivli platform itself has achieved SOC 2, Type 2 compliance by an independent auditor and has successfully passed a full penetration test\n\nHow To Guide Log In Privacy Cookie Policy EEA Disclosures\n\nContact Us",
+    "all_text_length": 7421,
+    "all_links": [
+      "http://mrctcenter.org/",
+      "http://www.constantcontact.com/index.jsp?cc=forms_inline",
+      "https://amr.vivli.org/",
+      "https://azure.microsoft.com/en-us/industries/healthcare/",
+      "https://bit.ly/Vivli2025Videos",
+      "https://search.vivli.org/",
+      "https://search.vivli.org/study-submission",
+      "https://twitter.com/VivliCenter",
+      "https://vivli.org/",
+      "https://vivli.org/#",
+      "https://vivli.org/#content",
+      "https://vivli.org/about/",
+      "https://vivli.org/about/board-directors/",
+      "https://vivli.org/about/funders/",
+      "https://vivli.org/about/independent-review-panel/",
+      "https://vivli.org/about/leadership-team/",
+      "https://vivli.org/about/overview/",
+      "https://vivli.org/about/overview/#",
+      "https://vivli.org/about/overview/#content",
+      "https://vivli.org/about/vivli-committees/",
+      "https://vivli.org/annualreport-2025/",
+      "https://vivli.org/case-studies/",
+      "https://vivli.org/contact/",
+      "https://vivli.org/hiv-aids-trial-data/",
+      "https://vivli.org/home-grei/projects-at-vivli/",
+      "https://vivli.org/members/",
+      "https://vivli.org/members/become-a-member/",
+      "https://vivli.org/members/enquiries-about-studies-not-listed-on-the-vivli-platform/",
+      "https://vivli.org/members/ourmembers/",
+      "https://vivli.org/members/why-we-support-vivli/",
+      "https://vivli.org/news/",
+      "https://vivli.org/news/blog/",
+      "https://vivli.org/news/events/",
+      "https://vivli.org/news/news/",
+      "https://vivli.org/privacy/",
+      "https://vivli.org/resources/faqs/",
+      "https://vivli.org/resources/five-safes-framework/",
+      "https://vivli.org/resources/platform_metrics/",
+      "https://vivli.org/resources/publications/",
+      "https://vivli.org/resources/requestdata/",
+      "https://vivli.org/resources/resources/",
+      "https://vivli.org/resources/sharedata/",
+      "https://vivli.org/resources/webinars/",
+      "https://vivli.org/share-nih-funded-data/",
+      "https://vivli.org/the-vivli-global-ambassador-program-highlights-from-the-inaugural-cohort/",
+      "https://vivli.org/vivli-cookie-policy/",
+      "https://vivli.org/vivli-data-contributor-spotlight-ucsfs-kaitlin-yee-on-navigating-data-sharing-across-a-multi-study-research-initiative/",
+      "https://vivli.org/vivli-eea-disclosure/",
+      "https://vivli.org/vivli-platform-version-3-9-now-available-2/",
+      "https://vivli.org/vivli_europe/",
+      "https://vivli.org/why-share-your-clinical-research-data/",
+      "https://www.constantcontact.com/legal/service-provider",
+      "https://www.facebook.com/VivliCenter",
+      "https://www.linkedin.com/company/vivli"
+    ],
+    "unique_links_count": 54,
+    "link_graph": {
+      "https://vivli.org/": [
+        "https://vivli.org/#content",
+        "https://vivli.org/",
+        "https://vivli.org/",
+        "https://vivli.org/about/",
+        "https://vivli.org/about/overview/"
+      ],
+      "https://vivli.org/about/": [
+        "https://vivli.org/about/overview/#content",
+        "https://vivli.org/",
+        "https://vivli.org/",
+        "https://vivli.org/about/",
+        "https://vivli.org/about/overview/"
+      ]
+    }
+  },
+  "errors": {
+    "failed_urls": [],
+    "total_failed": 0
+  },
+  "statistics": {
+    "total_text_chars": 7421,
+    "unique_urls_found": 54,
+    "pages_with_errors": 0,
+    "extraction_success_rate": "40.0%"
+  }
+}
