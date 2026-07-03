@@ -1,0 +1,212 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-10
+================================================================================
+
+USER STORY: Answer FAQ / knowledge base queries with grounded, cited responses
+DESCRIPTION: Answer general FAQ questions with reliable, sourced responses
+GOAL: Provide researchers with accurate answers backed by knowledge base with citations
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 13 story points / 5-6 days
+
+================================================================================
+KNOWLEDGE SOURCES
+================================================================================
+
+1. Platform FAQs
+2. How-to Guides
+3. AIML Policies
+4. Response Templates
+5. Data Request Process Docs
+
+================================================================================
+RETRIEVAL PROCESS
+================================================================================
+
+STEP_1: Semantic search (vector similarity)
+STEP_2: Retrieve top-k relevant documents
+STEP_3: Filter by relevance score threshold
+STEP_4: Verify groundedness of potential response
+STEP_5: Generate grounded response with citations
+STEP_6: Verify response quality before returning
+
+================================================================================
+QUALITY METRICS
+================================================================================
+
+RELEVANCE_SCORE_THRESHOLD: >= 0.70
+GROUNDEDNESS_THRESHOLD: >= 0.75
+HALLUCINATION_RISK_THRESHOLD: <= 5%
+CONFIDENCE_THRESHOLD: >= 0.70
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: NO_ANSWER_FOUND
+ERROR_1_MESSAGE: "I don't have information about that. Escalating to our support team."
+ERROR_1_WHEN: No relevant documents found
+
+ERROR_2_TYPE: HALLUCINATION_RISK
+ERROR_2_MESSAGE: "I'm not confident enough to answer that. Escalating to support."
+ERROR_2_WHEN: Groundedness score too low
+
+ERROR_3_TYPE: NO_SOURCES
+ERROR_3_MESSAGE: "I can't find sources for this answer. Escalating to support."
+ERROR_3_WHEN: No citations available
+
+ERROR_4_TYPE: MULTIPLE_ANSWERS
+ERROR_4_MESSAGE: "This question has multiple possible answers. Please be more specific."
+ERROR_4_WHEN: Conflicting sources retrieved
+
+================================================================================
+TEST SCENARIOS - VALID ANSWERS
+================================================================================
+
+TEST_1:
+  query: "How do I submit a data request?"
+  relevant_docs: 5
+  confidence: 0.92
+  groundedness: 0.88
+  expected_result: "answer with citations"
+  description: "Clear FAQ with strong sources"
+
+TEST_2:
+  query: "What's the AIML policy about data sharing?"
+  relevant_docs: 3
+  confidence: 0.88
+  groundedness: 0.90
+  expected_result: "answer with policy citations"
+  description: "Policy question with authoritative sources"
+
+TEST_3:
+  query: "What eligibility criteria do I need to meet?"
+  relevant_docs: 4
+  confidence: 0.85
+  groundedness: 0.86
+  expected_result: "answer with criteria list"
+  description: "Eligibility question with clear sources"
+
+================================================================================
+TEST SCENARIOS - INVALID/ESCALATE
+================================================================================
+
+TEST_4:
+  query: "Random unrelated question"
+  relevant_docs: 0
+  confidence: 0.15
+  expected_result: "escalate"
+  description: "No relevant documents found"
+
+TEST_5:
+  query: "Can I hack the system?"
+  relevant_docs: 2
+  confidence: 0.40
+  groundedness: 0.30
+  expected_result: "escalate"
+  description: "Low groundedness score"
+
+TEST_6:
+  query: "Tell me something not in the docs"
+  relevant_docs: 1
+  confidence: 0.65
+  hallucination_risk: "high"
+  expected_result: "escalate"
+  description: "High hallucination risk"
+
+================================================================================
+RESPONSE FORMAT
+================================================================================
+
+RESPONSE_STRUCTURE:
+{
+  "answer": "Natural language response",
+  "intent": "FAQ",
+  "confidence_score": 0.85,
+  "relevance_score": 0.88,
+  "groundedness_score": 0.86,
+  "sources": [
+    {
+      "title": "How to Submit a Data Request",
+      "url": "/docs/how-to/submit-request",
+      "relevance": 0.92
+    }
+  ],
+  "hallucination_risk": "low"
+}
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: KB_SEARCH_ENABLED = true
+DESC_1: Enable/disable knowledge base search
+
+PARAM_2: TOP_K_DOCUMENTS = 5
+DESC_2: Number of documents to retrieve
+
+PARAM_3: RELEVANCE_THRESHOLD = 0.70
+DESC_3: Minimum relevance score for answer
+
+PARAM_4: GROUNDEDNESS_THRESHOLD = 0.75
+DESC_4: Minimum groundedness score
+
+PARAM_5: MAX_HALLUCINATION_RISK = 0.05
+DESC_5: Maximum acceptable hallucination risk
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: answer_faq_query(intent_result: IntentClassification, message: ChatRequest) -> str
+
+FUNCTION_SIGNATURE:
+def answer_faq_query(intent_result: IntentClassification, message: ChatRequest) -> str:
+    '''
+    Answer FAQ query with grounded response and citations.
+
+    Args:
+        intent_result: IntentClassification indicating FAQ
+        message: ChatRequest with query
+
+    Returns:
+        Grounded response with citations
+    '''
+
+FLOW:
+1. Perform semantic search on query
+2. Retrieve top-k documents
+3. Check relevance threshold
+4. Verify groundedness
+5. Check hallucination risk
+6. Generate response from documents
+7. Add citations/references
+8. Return response with metadata
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Semantic search retrieves relevant documents
+AC_2: Relevance score filtering works
+AC_3: Responses grounded in documents
+AC_4: Citations/sources included
+AC_5: Hallucination detection works
+AC_6: Answers accurate and helpful
+AC_7: Low relevance queries escalated
+AC_8: Error messages appropriate
+AC_9: Response quality verified
+AC_10: All acceptance criteria documented
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: HIGH
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 13 story points / 5-6 days
+
+================================================================================

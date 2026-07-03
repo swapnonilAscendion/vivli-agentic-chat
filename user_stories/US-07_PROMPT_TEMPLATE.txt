@@ -1,0 +1,158 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-07
+================================================================================
+
+USER STORY: Classify each message into an intent category
+DESCRIPTION: Classify incoming researcher messages into defined intent categories
+GOAL: Correctly identify what type of question is being asked so it can be routed appropriately
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 8 story points / 3-4 days
+
+================================================================================
+INTENT CATEGORIES
+================================================================================
+
+1. FAQ - General questions about the platform
+2. DATA_REQUEST_RELATED - Questions about specific data requests
+3. HYBRID - Questions spanning multiple categories
+4. ESCALATION - Issues requiring human intervention
+5. UNKNOWN - Queries that don't fit any category
+
+================================================================================
+CLASSIFICATION RULES
+================================================================================
+
+RULE_1: Extract key terms and context from query
+RULE_2: Match against intent taxonomy
+RULE_3: Calculate confidence score (0.0-1.0)
+RULE_4: Allow multi-intent classification when applicable
+RULE_5: Set confidence thresholds for routing
+
+================================================================================
+TEST SCENARIOS
+================================================================================
+
+TEST_1:
+  query: "How do I submit a data request?"
+  expected_intent: "FAQ"
+  confidence_min: 0.85
+  description: "Basic FAQ question"
+
+TEST_2:
+  query: "What's the status of my request REQ-001?"
+  expected_intent: "DATA_REQUEST_RELATED"
+  confidence_min: 0.90
+  description: "Data request status query"
+
+TEST_3:
+  query: "Can I change my data request after submission?"
+  expected_intent: "HYBRID"
+  confidence_min: 0.75
+  description: "Both process and specific request"
+
+TEST_4:
+  query: "My account is locked and I can't access anything"
+  expected_intent: "ESCALATION"
+  confidence_min: 0.80
+  description: "Issue requiring immediate help"
+
+TEST_5:
+  query: "xyz abc 123 random"
+  expected_intent: "UNKNOWN"
+  confidence_max: 0.50
+  description: "Nonsensical query"
+
+================================================================================
+CONFIDENCE THRESHOLDS
+================================================================================
+
+HIGH_CONFIDENCE: >= 0.80
+MEDIUM_CONFIDENCE: 0.60 - 0.79
+LOW_CONFIDENCE: < 0.60
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: CLASSIFICATION_FAILED
+ERROR_1_MESSAGE: "Unable to classify your request. Please rephrase and try again."
+ERROR_1_WHEN: No matching intent found
+
+ERROR_2_TYPE: LOW_CONFIDENCE
+ERROR_2_MESSAGE: "I'm not entirely sure what you're asking. Could you provide more detail?"
+ERROR_2_WHEN: Confidence score below threshold
+
+ERROR_3_TYPE: AMBIGUOUS_INTENT
+ERROR_3_MESSAGE: "Your question could relate to multiple topics. Please be more specific."
+ERROR_3_WHEN: Multiple intents with equal confidence
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: INTENT_CLASSIFICATION_ENABLED = true
+DESC_1: Enable/disable intent classification
+
+PARAM_2: CONFIDENCE_THRESHOLD = 0.70
+DESC_2: Minimum confidence for routing
+
+PARAM_3: ALLOW_MULTI_INTENT = true
+DESC_3: Allow classification into multiple intents
+
+PARAM_4: MAX_INTENTS_PER_QUERY = 2
+DESC_4: Maximum intents per query
+
+PARAM_5: USE_ML_MODEL = true
+DESC_5: Use ML model vs rule-based classification
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: classify_intent(query: str) -> IntentClassification
+
+FUNCTION_SIGNATURE:
+def classify_intent(query: str) -> IntentClassification:
+    '''
+    Classify query into intent category with confidence score.
+
+    Args:
+        query: User query text
+
+    Returns:
+        IntentClassification with intent and confidence
+    '''
+
+CLASSIFIER_OPTIONS:
+1. Rule-based (keywords/patterns)
+2. ML-based (trained model)
+3. Hybrid (rules + ML)
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: All 5 intent categories correctly identified
+AC_2: Confidence scores accurate (0.0-1.0)
+AC_3: FAQ questions classified with >85% accuracy
+AC_4: Data request queries classified correctly
+AC_5: Hybrid queries identified
+AC_6: Escalation queries routed
+AC_7: Unknown queries handled
+AC_8: Multi-intent classification works
+AC_9: Unit tests cover all intents
+AC_10: Integration with routing system verified
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: HIGH
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 8 story points / 3-4 days
+
+================================================================================

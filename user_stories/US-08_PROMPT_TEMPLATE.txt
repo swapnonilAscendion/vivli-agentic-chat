@@ -1,0 +1,169 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-08
+================================================================================
+
+USER STORY: Route queries based on detected intent
+DESCRIPTION: Route queries to the correct handler based on detected intent
+GOAL: Ensure each query is processed by the right system for accurate answers
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 5 story points / 2-3 days
+
+================================================================================
+ROUTING RULES
+================================================================================
+
+ROUTE_1: FAQ (confidence ≥ 0.70) → Knowledge Base Search
+ROUTE_2: DATA_REQUEST_RELATED (confidence ≥ 0.70) → Data Request API
+ROUTE_3: HYBRID (confidence ≥ 0.60) → Knowledge Base then API if needed
+ROUTE_4: ESCALATION (confidence ≥ 0.50) → Route to Admin/Support
+ROUTE_5: UNKNOWN (confidence < 0.50) → Escalate to Human Support
+
+================================================================================
+ROUTING HANDLERS
+================================================================================
+
+HANDLER_1: KB_SEARCH
+  Type: Knowledge Base Vector Search
+  Data Source: Azure AI Search Index
+  Response Type: Grounded with citations
+
+HANDLER_2: API_QUERY
+  Type: Data Request API
+  Data Source: Vivli Data Request API
+  Response Type: Real-time data with status
+
+HANDLER_3: HYBRID_ROUTING
+  Type: Multi-step routing
+  Process: KB search first, then API if needed
+  Response Type: Combined from both sources
+
+HANDLER_4: ESCALATION
+  Type: Manual escalation
+  Destination: Support team/Admin
+  Response Type: Escalation message
+
+================================================================================
+TEST SCENARIOS
+================================================================================
+
+TEST_1:
+  intent: "FAQ"
+  confidence: 0.85
+  expected_route: "KB_SEARCH"
+  description: "High confidence FAQ routed to knowledge base"
+
+TEST_2:
+  intent: "DATA_REQUEST_RELATED"
+  confidence: 0.80
+  expected_route: "API_QUERY"
+  description: "High confidence data request to API"
+
+TEST_3:
+  intent: "HYBRID"
+  confidence: 0.75
+  expected_route: "HYBRID_ROUTING"
+  description: "Hybrid query routed to multi-step handler"
+
+TEST_4:
+  intent: "ESCALATION"
+  confidence: 0.60
+  expected_route: "ESCALATION"
+  description: "Escalation routed to support"
+
+TEST_5:
+  intent: "UNKNOWN"
+  confidence: 0.30
+  expected_route: "ESCALATION"
+  description: "Unknown query escalated"
+
+TEST_6:
+  intent: "FAQ"
+  confidence: 0.45
+  expected_route: "ESCALATION"
+  description: "Low confidence FAQ escalated"
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: ROUTING_FAILED
+ERROR_1_MESSAGE: "Unable to route your request. Escalating to support team."
+ERROR_1_WHEN: No valid routing path found
+
+ERROR_2_TYPE: LOW_CONFIDENCE_ROUTING
+ERROR_2_MESSAGE: "I'm not certain how to answer this. Escalating to our support team."
+ERROR_2_WHEN: Confidence score below threshold
+
+ERROR_3_TYPE: HANDLER_UNAVAILABLE
+ERROR_3_MESSAGE: "The requested service is temporarily unavailable. Please try again."
+ERROR_3_WHEN: Handler service is down
+
+ERROR_4_TYPE: ROUTING_TIMEOUT
+ERROR_4_MESSAGE: "The request took too long to process. Please try again."
+ERROR_4_WHEN: Routing operation exceeds timeout
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: FAQ_CONFIDENCE_THRESHOLD = 0.70
+DESC_1: Minimum confidence for FAQ routing
+
+PARAM_2: API_CONFIDENCE_THRESHOLD = 0.70
+DESC_2: Minimum confidence for API routing
+
+PARAM_3: HYBRID_CONFIDENCE_THRESHOLD = 0.60
+DESC_3: Minimum confidence for hybrid routing
+
+PARAM_4: ESCALATION_CONFIDENCE_THRESHOLD = 0.50
+DESC_4: Minimum confidence for escalation
+
+PARAM_5: ROUTING_TIMEOUT_SECONDS = 10
+DESC_5: Maximum time for routing operation
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: route_query(intent_result: IntentClassification) -> RoutingDecision
+
+FUNCTION_SIGNATURE:
+def route_query(intent_result: IntentClassification) -> RoutingDecision:
+    '''
+    Route query to appropriate handler based on intent.
+
+    Args:
+        intent_result: IntentClassification with intent and confidence
+
+    Returns:
+        RoutingDecision with target handler and parameters
+    '''
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: FAQ queries routed to KB search
+AC_2: Data request queries routed to API
+AC_3: Hybrid queries processed correctly
+AC_4: Low confidence queries escalated
+AC_5: Escalation messages sent correctly
+AC_6: Handler unavailability handled
+AC_7: Routing timeout implemented
+AC_8: Error messages appropriate
+AC_9: Routing logs captured
+AC_10: All routes tested and verified
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: HIGH
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 5 story points / 2-3 days
+
+================================================================================

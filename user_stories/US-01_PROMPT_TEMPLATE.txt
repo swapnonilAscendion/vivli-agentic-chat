@@ -1,0 +1,201 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-01
+================================================================================
+
+USER STORY: Restrict chat scope to eligible chats and stages
+DESCRIPTION: Validates chat type and data request stage before allowing bot responses
+GOAL: Ensure the chatbot responds only in appropriate chat contexts and workflow stages
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 5 story points / 2-3 days
+
+================================================================================
+VALIDATION RULES (Order of Execution)
+================================================================================
+
+RULE_1: Check chat type is eligible (open chat only)
+RULE_2: Check data request stage is draft/revision or form-check
+RULE_3: Verify chat is not in other channels (Contributors, Requestor, Private)
+RULE_4: Verify request hasn't passed form-check validation stage
+
+================================================================================
+ELIGIBLE CONDITIONS (Bot ALLOWS response)
+================================================================================
+
+1. Open chat during draft/revision stage
+2. Open chat during Vivli form-check stage
+3. Chat is in active data request
+4. User is in correct workflow stage
+
+================================================================================
+INELIGIBLE CONDITIONS (Bot DENIES response)
+================================================================================
+
+1. Contributors chat
+2. Requestor chat
+3. Private Organization chat
+4. Stages past form-check
+5. After human form-check validation started
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: WRONG_CHAT_TYPE
+ERROR_1_MESSAGE: "This feature is only available in the open chat for your data request."
+ERROR_1_WHEN: Chat is not the open chat
+
+ERROR_2_TYPE: WRONG_STAGE
+ERROR_2_MESSAGE: "This feature is only available during the form-check stage of your request."
+ERROR_2_WHEN: Request has passed form-check
+
+ERROR_3_TYPE: STAGE_COMPLETED
+ERROR_3_MESSAGE: "Form-check has been completed. Please contact support for further assistance."
+ERROR_3_WHEN: Request at human review stage
+
+ERROR_4_TYPE: CHAT_NOT_FOUND
+ERROR_4_MESSAGE: "Unable to verify chat context. Please try again."
+ERROR_4_WHEN: Chat ID cannot be resolved
+
+================================================================================
+TEST SCENARIOS - ELIGIBLE (Should ALLOW)
+================================================================================
+
+TEST_1:
+  chat_id: "open_chat_001"
+  stage: "draft_revision"
+  user_role: "researcher"
+  expected_result: "allowed"
+  description: "Standard researcher in open chat during draft stage"
+
+TEST_2:
+  chat_id: "open_chat_002"
+  stage: "form_check"
+  user_role: "researcher"
+  expected_result: "allowed"
+  description: "Researcher in open chat during form-check stage"
+
+TEST_3:
+  chat_id: "open_chat_003"
+  stage: "draft_revision"
+  user_role: "team_member"
+  expected_result: "allowed"
+  description: "Team member in open chat during draft stage"
+
+================================================================================
+TEST SCENARIOS - INELIGIBLE (Should DENY)
+================================================================================
+
+TEST_4:
+  chat_id: "contributors_chat"
+  stage: "draft_revision"
+  user_role: "researcher"
+  expected_result: "denied"
+  description: "Researcher in contributors chat (wrong chat type)"
+
+TEST_5:
+  chat_id: "requestor_chat"
+  stage: "form_check"
+  user_role: "researcher"
+  expected_result: "denied"
+  description: "Researcher in requestor chat (wrong chat type)"
+
+TEST_6:
+  chat_id: "open_chat_001"
+  stage: "submitted"
+  user_role: "researcher"
+  expected_result: "denied"
+  description: "Researcher in open chat but request already submitted (wrong stage)"
+
+TEST_7:
+  chat_id: "private_org_chat"
+  stage: "draft_revision"
+  user_role: "researcher"
+  expected_result: "denied"
+  description: "Researcher in private org chat (wrong chat type)"
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: SCOPE_CHECK_ENABLED = true
+DESC_1: Enable/disable scope-based access control
+
+PARAM_2: ALLOWED_STAGES = ["draft_revision", "form_check"]
+DESC_2: Stages where bot can respond
+
+PARAM_3: ALLOWED_CHAT_TYPES = ["open_chat"]
+DESC_3: Chat types where bot can respond
+
+PARAM_4: BLOCKED_CHAT_TYPES = ["contributors_chat", "requestor_chat", "private_org_chat"]
+DESC_4: Chat types where bot should not respond
+
+PARAM_5: FALLBACK_TO_ESCALATION = true
+DESC_5: Send ineligible requests to support instead of hard-blocking
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: validate_chat_scope(message: ChatRequest) -> Tuple[bool, str]
+
+FUNCTION_SIGNATURE:
+def validate_chat_scope(message: ChatRequest) -> Tuple[bool, str]:
+    '''
+    Validate chat type and request stage before processing query.
+
+    Args:
+        message: ChatRequest with chat_id, request_stage, user_role
+
+    Returns:
+        (is_valid, error_message)
+    '''
+
+INTEGRATION_POINT: /chat endpoint in main.py
+EXECUTION_STEP: Before intent classification (Step 1)
+
+DATA_SOURCES:
+1. Message metadata (chat_id, request_stage)
+2. Data request API (for request status)
+3. Chat service API (for chat type)
+
+CACHING_STRATEGY: Cache chat scope for 5 minutes with chat_id as key
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Scope validation logic is implemented and tested
+AC_2: Open chat in allowed stages grants access
+AC_3: Restricted chats deny access
+AC_4: Completed requests deny access
+AC_5: Error messages are user-friendly
+AC_6: Validation runs before intent classification
+AC_7: Unit tests cover all scenarios
+AC_8: Integration tests verify /chat endpoint behavior
+AC_9: Documentation includes scope rules
+AC_10: Cache invalidation works correctly
+
+================================================================================
+INTEGRATION SEQUENCE
+================================================================================
+
+1. US-02 (Respond only to research team) - Role validation
+2. US-01 (this story) - Chat scope enforcement
+3. US-05 (Gracefully handle invalid inputs) - Input validation
+4. US-03 (Handle back-to-back messages) - Message grouping
+5. US-04 (Multiple questions) - Query decomposition
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+LAST_UPDATED: 2026-07-03
+PRIORITY: HIGH (gates other features)
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 5 story points / 2-3 days
+
+================================================================================
