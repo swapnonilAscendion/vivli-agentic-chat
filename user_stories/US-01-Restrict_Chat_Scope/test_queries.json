@@ -1,0 +1,388 @@
+{
+  "description": "Test queries for US-01: Restrict Chat Scope to Eligible Chats and Stages",
+  "version": "1.0",
+  "last_updated": "2026-07-03",
+  "usage": "Use these queries to test chat scope validation with curl or automated test scripts",
+  "endpoint": "POST /chat",
+  "categories": {
+    "ELIGIBLE_SCOPES": {
+      "description": "Queries from eligible chats and stages - should PASS scope validation",
+      "expected_response": "validation_status: passed, scope check succeeded",
+      "tests": [
+        {
+          "id": "eligible_001",
+          "chat_type": "open_chat",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "Can I use the chatbot in the open chat during the draft stage?",
+          "expected_status": "passed",
+          "description": "Open chat during draft_revision stage"
+        },
+        {
+          "id": "eligible_002",
+          "chat_type": "open_chat",
+          "request_stage": "form_check",
+          "user_role": "researcher",
+          "query": "What is the form check process?",
+          "expected_status": "passed",
+          "description": "Open chat during form_check stage"
+        },
+        {
+          "id": "eligible_003",
+          "chat_type": "open_chat",
+          "request_stage": "draft_revision",
+          "user_role": "team_member",
+          "query": "How do I submit a data request?",
+          "expected_status": "passed",
+          "description": "Team member in open chat, draft stage"
+        },
+        {
+          "id": "eligible_004",
+          "chat_type": "open_chat",
+          "request_stage": "form_check",
+          "user_role": "data_request_creator",
+          "query": "Can I modify my submission?",
+          "expected_status": "passed",
+          "description": "Data request creator in open chat, form-check stage"
+        },
+        {
+          "id": "eligible_005",
+          "chat_type": "open_chat",
+          "request_stage": "draft_revision",
+          "user_role": "research_team_admin",
+          "query": "What are the requirements?",
+          "expected_status": "passed",
+          "description": "Research team admin in open chat, draft stage"
+        }
+      ]
+    },
+    "INELIGIBLE_CHATS": {
+      "description": "Queries from blocked chat types - should FAIL scope validation",
+      "expected_response": "validation_status: failed, error: 'open chat only' message",
+      "tests": [
+        {
+          "id": "ineligible_chat_001",
+          "chat_type": "contributors_chat",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "How do I submit a data request?",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Blocked: Contributors chat"
+        },
+        {
+          "id": "ineligible_chat_002",
+          "chat_type": "requestor_chat",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "What is the data request?",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Blocked: Requestor chat"
+        },
+        {
+          "id": "ineligible_chat_003",
+          "chat_type": "private_org_chat",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "Tell me about requests",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Blocked: Private org chat"
+        },
+        {
+          "id": "ineligible_chat_004",
+          "chat_type": "requestor_chat",
+          "request_stage": "form_check",
+          "user_role": "team_member",
+          "query": "Can I help?",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Blocked: Requestor chat during form-check"
+        },
+        {
+          "id": "ineligible_chat_005",
+          "chat_type": "private_org_chat",
+          "request_stage": "form_check",
+          "user_role": "data_request_creator",
+          "query": "Status update",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Blocked: Private org chat during form-check"
+        }
+      ]
+    },
+    "INELIGIBLE_STAGES": {
+      "description": "Queries from ineligible request stages - should FAIL scope validation",
+      "expected_response": "validation_status: failed, error: 'form-check stage only' or 'completed' message",
+      "tests": [
+        {
+          "id": "ineligible_stage_001",
+          "chat_type": "open_chat",
+          "request_stage": "submitted",
+          "user_role": "researcher",
+          "query": "How do I submit a data request?",
+          "expected_status": "failed",
+          "expected_error": "wrong_stage",
+          "description": "Blocked: submitted stage (form-check not completed)"
+        },
+        {
+          "id": "ineligible_stage_002",
+          "chat_type": "open_chat",
+          "request_stage": "approved",
+          "user_role": "researcher",
+          "query": "When will I get access?",
+          "expected_status": "failed",
+          "expected_error": "stage_completed",
+          "description": "Blocked: approved stage (request completed)"
+        },
+        {
+          "id": "ineligible_stage_003",
+          "chat_type": "open_chat",
+          "request_stage": "rejected",
+          "user_role": "team_member",
+          "query": "Can I resubmit?",
+          "expected_status": "failed",
+          "expected_error": "stage_completed",
+          "description": "Blocked: rejected stage (request completed)"
+        },
+        {
+          "id": "ineligible_stage_004",
+          "chat_type": "open_chat",
+          "request_stage": "submitted",
+          "user_role": "data_request_creator",
+          "query": "What happens next?",
+          "expected_status": "failed",
+          "expected_error": "wrong_stage",
+          "description": "Blocked: submitted - human review in progress"
+        },
+        {
+          "id": "ineligible_stage_005",
+          "chat_type": "open_chat",
+          "request_stage": "approved",
+          "user_role": "research_team_admin",
+          "query": "Access granted?",
+          "expected_status": "failed",
+          "expected_error": "stage_completed",
+          "description": "Blocked: approved - request finalized"
+        }
+      ]
+    },
+    "COMBINED_INELIGIBLE": {
+      "description": "Queries with both wrong chat AND wrong stage - should FAIL on chat type first",
+      "expected_response": "validation_status: failed, error: 'open chat only' message (chat checked first)",
+      "tests": [
+        {
+          "id": "combined_001",
+          "chat_type": "contributors_chat",
+          "request_stage": "submitted",
+          "user_role": "researcher",
+          "query": "Query",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Both invalid: chat type checked first"
+        },
+        {
+          "id": "combined_002",
+          "chat_type": "requestor_chat",
+          "request_stage": "approved",
+          "user_role": "team_member",
+          "query": "Query",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Both invalid: returns chat error"
+        },
+        {
+          "id": "combined_003",
+          "chat_type": "private_org_chat",
+          "request_stage": "rejected",
+          "user_role": "data_request_creator",
+          "query": "Query",
+          "expected_status": "failed",
+          "expected_error": "wrong_chat_type",
+          "description": "Both invalid: prioritizes chat validation"
+        }
+      ]
+    },
+    "EDGE_CASES": {
+      "description": "Edge cases and special scenarios",
+      "tests": [
+        {
+          "id": "edge_001",
+          "chat_type": "",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "failed",
+          "expected_error": "unknown_chat_type",
+          "description": "Empty chat_type string"
+        },
+        {
+          "id": "edge_002",
+          "chat_type": null,
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "failed",
+          "expected_error": "unknown_chat_type",
+          "description": "Null chat_type in request"
+        },
+        {
+          "id": "edge_003",
+          "chat_type": "open_chat",
+          "request_stage": "",
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "failed",
+          "expected_error": "wrong_stage",
+          "description": "Empty request_stage string"
+        },
+        {
+          "id": "edge_004",
+          "chat_type": "open_chat",
+          "request_stage": null,
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "failed",
+          "expected_error": "wrong_stage",
+          "description": "Null request_stage in request"
+        },
+        {
+          "id": "edge_005",
+          "chat_type": "OPEN_CHAT",
+          "request_stage": "DRAFT_REVISION",
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "passed",
+          "description": "Uppercase chat_type and stage (case-insensitive)"
+        },
+        {
+          "id": "edge_006",
+          "chat_type": "  open_chat  ",
+          "request_stage": "  draft_revision  ",
+          "user_role": "researcher",
+          "query": "How do I submit?",
+          "expected_status": "passed",
+          "description": "Extra whitespace (should be trimmed)"
+        },
+        {
+          "id": "edge_007",
+          "chat_type": "Open_Chat",
+          "request_stage": "Form_Check",
+          "user_role": "team_member",
+          "query": "What happens?",
+          "expected_status": "passed",
+          "description": "Mixed case normalization"
+        },
+        {
+          "id": "edge_008",
+          "chat_type": "unknown_chat_type",
+          "request_stage": "draft_revision",
+          "user_role": "researcher",
+          "query": "Query",
+          "expected_status": "failed",
+          "expected_error": "unknown_chat_type",
+          "description": "Unknown chat type"
+        },
+        {
+          "id": "edge_009",
+          "chat_type": "open_chat",
+          "request_stage": "unknown_stage",
+          "user_role": "researcher",
+          "query": "Query",
+          "expected_status": "failed",
+          "expected_error": "wrong_stage",
+          "description": "Unknown request stage"
+        }
+      ]
+    }
+  },
+  "curl_examples": {
+    "test_eligible_scope": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Can I use the chatbot here?\", \"user_role\": \"researcher\", \"chat_type\": \"open_chat\", \"request_stage\": \"draft_revision\"}'",
+      "description": "Test eligible chat scope"
+    },
+    "test_ineligible_chat": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Can I use the chatbot here?\", \"user_role\": \"researcher\", \"chat_type\": \"contributors_chat\", \"request_stage\": \"draft_revision\"}'",
+      "description": "Test ineligible chat type"
+    },
+    "test_ineligible_stage": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Can I use the chatbot here?\", \"user_role\": \"researcher\", \"chat_type\": \"open_chat\", \"request_stage\": \"approved\"}'",
+      "description": "Test ineligible request stage"
+    },
+    "test_form_check_stage": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Is this valid?\", \"user_role\": \"researcher\", \"chat_type\": \"open_chat\", \"request_stage\": \"form_check\"}'",
+      "description": "Test form-check stage (eligible)"
+    },
+    "test_missing_chat_type": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Can I use the chatbot?\", \"user_role\": \"researcher\", \"request_stage\": \"draft_revision\"}'",
+      "description": "Test missing chat_type (defaults to open_chat)"
+    },
+    "test_missing_stage": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"Can I use the chatbot?\", \"user_role\": \"researcher\", \"chat_type\": \"open_chat\"}'",
+      "description": "Test missing request_stage (defaults to draft_revision)"
+    }
+  },
+  "validation_rules": {
+    "RULE_1": {
+      "description": "Check chat type is eligible (open_chat only)",
+      "allowed_values": ["open_chat"],
+      "blocked_values": ["contributors_chat", "requestor_chat", "private_org_chat"]
+    },
+    "RULE_2": {
+      "description": "Check request stage is draft/revision or form-check",
+      "allowed_values": ["draft_revision", "form_check"],
+      "blocked_values": ["submitted", "approved", "rejected"]
+    },
+    "RULE_3": {
+      "description": "Verify chat is not in other channels",
+      "priority": "before stage check",
+      "error_message": "This feature is only available in the open chat for your data request."
+    },
+    "RULE_4": {
+      "description": "Verify request hasn't passed form-check validation stage",
+      "priority": "after chat check",
+      "error_message": "Form-check has been completed. Please contact support for further assistance."
+    }
+  },
+  "error_scenarios": {
+    "ERROR_1_WRONG_CHAT_TYPE": {
+      "message": "This feature is only available in the open chat for your data request.",
+      "triggers": ["contributors_chat", "requestor_chat", "private_org_chat"],
+      "priority": 1
+    },
+    "ERROR_2_WRONG_STAGE": {
+      "message": "This feature is only available during the form-check stage of your request.",
+      "triggers": ["submitted", "unknown_stage", ""],
+      "priority": 2
+    },
+    "ERROR_3_STAGE_COMPLETED": {
+      "message": "Form-check has been completed. Please contact support for further assistance.",
+      "triggers": ["approved", "rejected"],
+      "priority": 2
+    },
+    "ERROR_4_CHAT_NOT_FOUND": {
+      "message": "Unable to verify chat context. Please try again.",
+      "triggers": ["null", "unknown_chat_type"],
+      "priority": 1
+    }
+  },
+  "statistics": {
+    "total_queries": 23,
+    "eligible_queries": 5,
+    "ineligible_queries": 13,
+    "combined_ineligible_queries": 3,
+    "edge_case_queries": 9,
+    "categories": 5,
+    "allowed_chat_types": 1,
+    "blocked_chat_types": 3,
+    "allowed_stages": 2,
+    "blocked_stages": 3
+  },
+  "execution_order": {
+    "step_1": "Validate chat_type FIRST (Rule 1 - check RULE_1)",
+    "step_2": "Validate request_stage SECOND (Rule 2 - check RULE_2)",
+    "step_3": "Return error_message based on what failed",
+    "note": "Chat type validation takes priority - always check chat before stage"
+  }
+}
