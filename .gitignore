@@ -232,6 +232,9 @@ test_output.txt
 temp/
 tmp/
 
+# EXCEPTIONS: Allow test_queries.json in user_stories (needed for testing)
+!user_stories/**/test_queries.json
+
 # Logs
 logs/
 *.log

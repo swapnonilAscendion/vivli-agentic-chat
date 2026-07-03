@@ -1,0 +1,90 @@
+{
+  "description": "Test queries for US-02: Respond Only to Research Team",
+  "version": "1.0",
+  "last_updated": "2026-07-03",
+  "usage": "Use these queries to test role-based access control with curl or automated test scripts",
+  "endpoint": "POST /chat",
+  "categories": {
+    "ELIGIBLE_RESEARCHERS": {
+      "description": "Queries from eligible researchers - should PASS role validation",
+      "expected_response": "validation_status: passed, normal chatbot response",
+      "tests": [
+        {"id": "eligible_001", "user_role": "researcher", "user_id": "researcher_001", "query": "How do I submit a data request?", "expected_status": "passed", "description": "Standard researcher query"},
+        {"id": "eligible_002", "user_role": "researcher", "user_id": "researcher_002", "query": "What is the form check process?", "expected_status": "passed", "description": "Researcher with different ID"},
+        {"id": "eligible_003", "user_role": "team_member", "user_id": "team_001", "query": "When will my request be approved?", "expected_status": "passed", "description": "Team member query"},
+        {"id": "eligible_004", "user_role": "data_request_creator", "user_id": "requester_001", "query": "Can I download the data?", "expected_status": "passed", "description": "Data request creator query"},
+        {"id": "eligible_005", "user_role": "research_team_admin", "user_id": "admin_001", "query": "What are eligibility requirements?", "expected_status": "passed", "description": "Research team admin query"}
+      ]
+    },
+    "INELIGIBLE_ADMINS": {
+      "description": "Queries from admin users - should FAIL role validation",
+      "expected_response": "validation_status: failed, error: 'research team only' message",
+      "tests": [
+        {"id": "ineligible_001", "user_role": "vivli_admin", "user_id": "admin_vivli_001", "query": "How do I submit a data request?", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Vivli platform admin attempt"},
+        {"id": "ineligible_002", "user_role": "system_admin", "user_id": "admin_sys_001", "query": "What is the form check?", "expected_status": "failed", "expected_error": "ineligible_role", "description": "System administrator attempt"},
+        {"id": "ineligible_003", "user_role": "org_admin", "user_id": "admin_org_001", "query": "Tell me about data requests", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Organization admin attempt"}
+      ]
+    },
+    "INELIGIBLE_BOTS": {
+      "description": "Queries from bot/system users - should FAIL role validation",
+      "expected_response": "validation_status: failed, error: 'automated system' message",
+      "tests": [
+        {"id": "ineligible_bot_001", "user_role": "bot_system", "user_id": "bot_001", "query": "Status check", "expected_status": "failed", "expected_error": "bot_detected", "description": "System bot attempt"},
+        {"id": "ineligible_bot_002", "user_role": "automated_notification", "user_id": "notify_001", "query": "Send notification", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Automated notification service"},
+        {"id": "ineligible_bot_003", "user_role": "irp_system", "user_id": "irp_001", "query": "Repository query", "expected_status": "failed", "expected_error": "bot_detected", "description": "Institutional repository system"}
+      ]
+    },
+    "INELIGIBLE_CONTRIBUTORS": {
+      "description": "Queries from data contributors - should FAIL role validation",
+      "expected_response": "validation_status: failed, error: 'research team only' message",
+      "tests": [
+        {"id": "ineligible_contrib_001", "user_role": "data_contributor", "user_id": "contrib_001", "query": "How do I submit data?", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Data contributor (not researcher)"},
+        {"id": "ineligible_contrib_002", "user_role": "data_curator", "user_id": "curator_001", "query": "Data curation query", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Data curator role"},
+        {"id": "ineligible_contrib_003", "user_role": "contributor", "user_id": "contrib_002", "query": "Contribution question", "expected_status": "failed", "expected_error": "ineligible_role", "description": "General contributor role"}
+      ]
+    },
+    "INELIGIBLE_GUESTS": {
+      "description": "Queries from guest/unauthenticated users - should FAIL role validation",
+      "expected_response": "validation_status: failed, error: 'unable to verify role' message",
+      "tests": [
+        {"id": "ineligible_guest_001", "user_role": "guest", "user_id": "guest_001", "query": "What is data sharing?", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Guest user attempt"}
+      ]
+    },
+    "EDGE_CASES": {
+      "description": "Edge cases and special scenarios",
+      "tests": [
+        {"id": "edge_001", "user_role": "", "user_id": "user_empty", "query": "How do I submit?", "expected_status": "failed", "expected_error": "user_role_not_found", "description": "Empty role string"},
+        {"id": "edge_002", "user_role": null, "user_id": "user_none", "query": "How do I submit?", "expected_status": "failed", "expected_error": "user_role_not_found", "description": "Missing role in request"},
+        {"id": "edge_003", "user_role": "unknown_role_xyz", "user_id": "user_unknown", "query": "Query", "expected_status": "failed", "expected_error": "ineligible_role", "description": "Unknown role"},
+        {"id": "edge_004", "user_role": "RESEARCHER", "user_id": "user_caps", "query": "How do I submit?", "expected_status": "passed", "description": "Role in uppercase (case-insensitive)"},
+        {"id": "edge_005", "user_role": "   researcher   ", "user_id": "user_space", "query": "How do I submit?", "expected_status": "passed", "description": "Role with extra whitespace"}
+      ]
+    }
+  },
+  "curl_examples": {
+    "test_eligible_researcher": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -H 'X-User-Role: researcher' -d '{\"query\": \"How do I submit a data request?\"}'",
+      "description": "Test eligible researcher"
+    },
+    "test_ineligible_admin": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -H 'X-User-Role: vivli_admin' -d '{\"query\": \"How do I submit a data request?\"}'",
+      "description": "Test ineligible admin"
+    },
+    "test_bot_detected": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -H 'X-User-Role: bot_system' -d '{\"query\": \"Status check\"}'",
+      "description": "Test bot detection"
+    },
+    "test_missing_role": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"How do I submit a data request?\"}'",
+      "description": "Test missing role"
+    }
+  },
+  "statistics": {
+    "total_queries": 15,
+    "eligible_queries": 5,
+    "ineligible_queries": 10,
+    "categories": 6,
+    "eligible_roles": 4,
+    "ineligible_roles": 10
+  }
+}

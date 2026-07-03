@@ -1,0 +1,74 @@
+{
+  "description": "Test queries for {{US_ID}}: {{US_NAME}}",
+  "version": "1.0",
+  "last_updated": "2026-07-03",
+  "usage": "Use these queries to test the {{US_ID}} validator with curl, Postman, or automated test scripts",
+  "endpoint": "POST /chat",
+  "categories": {
+    "VALID_QUERIES": {
+      "description": "These queries should PASS {{US_ID}} validation and be processed normally",
+      "expected_response": "validation_status: passed, intent classification, answer from knowledge base",
+      "tests": [
+        {"id": "valid_001", "query": "{{VALID_QUERY_1}}", "expected_status": "passed", "description": "{{VALID_DESC_1}}"},
+        {"id": "valid_002", "query": "{{VALID_QUERY_2}}", "expected_status": "passed", "description": "{{VALID_DESC_2}}"},
+        {"id": "valid_003", "query": "{{VALID_QUERY_3}}", "expected_status": "passed", "description": "{{VALID_DESC_3}}"},
+        {"id": "valid_004", "query": "{{VALID_QUERY_4}}", "expected_status": "passed", "description": "{{VALID_DESC_4}}"},
+        {"id": "valid_005", "query": "{{VALID_QUERY_5}}", "expected_status": "passed", "description": "{{VALID_DESC_5}}"}
+      ]
+    },
+    "INVALID_TYPE_1": {
+      "description": "Messages violating {{VALIDATION_RULE_1}} - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: '{{ERROR_TYPE_1_MESSAGE}}'",
+      "tests": [
+        {"id": "invalid_001", "query": "{{INVALID_QUERY_1}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_1}}", "description": "{{INVALID_DESC_1}}"},
+        {"id": "invalid_002", "query": "{{INVALID_QUERY_2}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_1}}", "description": "{{INVALID_DESC_2}}"},
+        {"id": "invalid_003", "query": "{{INVALID_QUERY_3}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_1}}", "description": "{{INVALID_DESC_3}}"}
+      ]
+    },
+    "INVALID_TYPE_2": {
+      "description": "Messages violating {{VALIDATION_RULE_2}} - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: '{{ERROR_TYPE_2_MESSAGE}}'",
+      "tests": [
+        {"id": "invalid_004", "query": "{{INVALID_QUERY_4}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_2}}", "description": "{{INVALID_DESC_4}}"},
+        {"id": "invalid_005", "query": "{{INVALID_QUERY_5}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_2}}", "description": "{{INVALID_DESC_5}}"}
+      ]
+    },
+    "INVALID_TYPE_3": {
+      "description": "Messages violating {{VALIDATION_RULE_3}} - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: '{{ERROR_TYPE_3_MESSAGE}}'",
+      "tests": [
+        {"id": "invalid_006", "query": "{{INVALID_QUERY_6}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_3}}", "description": "{{INVALID_DESC_6}}"},
+        {"id": "invalid_007", "query": "{{INVALID_QUERY_7}}", "expected_status": "failed", "expected_error": "{{ERROR_TYPE_3}}", "description": "{{INVALID_DESC_7}}"}
+      ]
+    },
+    "EDGE_CASES": {
+      "description": "Edge cases that should PASS or FAIL depending on content",
+      "expected_response": "validation_status: passed/failed",
+      "tests": [
+        {"id": "edge_001", "query": "{{EDGE_QUERY_1}}", "expected_status": "passed", "description": "{{EDGE_DESC_1}}"},
+        {"id": "edge_002", "query": "{{EDGE_QUERY_2}}", "expected_status": "passed", "description": "{{EDGE_DESC_2}}"},
+        {"id": "edge_003", "query": "{{EDGE_QUERY_3}}", "expected_status": "passed", "description": "{{EDGE_DESC_3}}"}
+      ]
+    }
+  },
+  "curl_examples": {
+    "test_valid": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"{{VALID_QUERY_1}}\"}'",
+      "description": "Test a valid query"
+    },
+    "test_invalid_type_1": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"{{INVALID_QUERY_1}}\"}'",
+      "description": "Test {{VALIDATION_RULE_1}} violation"
+    },
+    "test_invalid_type_2": {
+      "command": "curl -X POST http://localhost:8000/chat -H 'Content-Type: application/json' -d '{\"query\": \"{{INVALID_QUERY_4}}\"}'",
+      "description": "Test {{VALIDATION_RULE_2}} violation"
+    }
+  },
+  "statistics": {
+    "total_queries": 15,
+    "valid_queries": 5,
+    "invalid_queries": 10,
+    "categories": 5
+  }
+}

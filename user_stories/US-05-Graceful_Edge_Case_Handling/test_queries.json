@@ -1,0 +1,138 @@
+{
+  "description": "Test queries for US-05: Graceful Edge Case Handling - Input Validation",
+  "version": "1.0",
+  "last_updated": "2026-07-03",
+  "usage": "Use these queries to test the input validator with curl, Postman, or the automated test scripts",
+  "endpoint": "POST /chat",
+  "categories": {
+    "VALID_QUERIES": {
+      "description": "These queries should PASS validation and be processed normally",
+      "expected_response": "validation_status: passed, intent classification, answer from knowledge base",
+      "tests": [
+        {"id": "valid_001", "query": "How do I submit a data request?", "expected_status": "passed", "description": "Standard FAQ question about data requests"},
+        {"id": "valid_002", "query": "What is the form check process?", "expected_status": "passed", "description": "Question about form check procedures"},
+        {"id": "valid_003", "query": "When will my request be approved?", "expected_status": "passed", "description": "Question about request timeline"},
+        {"id": "valid_004", "query": "Can I download the data after approval?", "expected_status": "passed", "description": "Question about data download permissions"},
+        {"id": "valid_005", "query": "What are the eligibility requirements?", "expected_status": "passed", "description": "Question about eligibility criteria"},
+        {"id": "valid_006", "query": "How do I add a study that's not listed?", "expected_status": "passed", "description": "Question about unlisted study handling"},
+        {"id": "valid_007", "query": "What's the status of request REQ-12345?", "expected_status": "passed", "description": "Question with request ID"},
+        {"id": "valid_008", "query": "I don't understand what's required. Can you help?", "expected_status": "passed", "description": "Natural language question with contraction"},
+        {"id": "valid_009", "query": "Is there a deadline for submission? When do I need to act?", "expected_status": "passed", "description": "Multiple sentences in one query"},
+        {"id": "valid_010", "query": "What does AIML policy mean in the context of data requests?", "expected_status": "passed", "description": "Technical jargon question"},
+        {"id": "valid_011", "query": "How can I contact the Vivli team for support?", "expected_status": "passed", "description": "Contact request question"},
+        {"id": "valid_012", "query": "Tell me about the data sharing process and timeline.", "expected_status": "passed", "description": "Multi-part request"},
+        {"id": "valid_013", "query": "What documents do I need to submit?", "expected_status": "passed", "description": "Documentation question"},
+        {"id": "valid_014", "query": "Is my research eligible for this platform?", "expected_status": "passed", "description": "Eligibility inquiry"},
+        {"id": "valid_015", "query": "How long does the approval process typically take?", "expected_status": "passed", "description": "Timeline estimation question"},
+        {"id": "valid_016", "query": "hi", "expected_status": "passed", "description": "Single-word greeting"},
+        {"id": "valid_017", "query": "hello", "expected_status": "passed", "description": "Single-word greeting"},
+        {"id": "valid_018", "query": "help", "expected_status": "passed", "description": "Single-word request for assistance"},
+        {"id": "valid_019", "query": "support", "expected_status": "passed", "description": "Single-word support inquiry"},
+        {"id": "valid_020", "query": "info", "expected_status": "passed", "description": "Single-word information request"}
+      ]
+    },
+    "INVALID_BLANK": {
+      "description": "Empty or whitespace-only messages - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "blank_001", "query": "", "expected_status": "failed", "expected_error": "blank_message", "description": "Completely empty message"},
+        {"id": "blank_002", "query": "   ", "expected_status": "failed", "expected_error": "blank_message", "description": "Spaces only"},
+        {"id": "blank_003", "query": "\n\n\n", "expected_status": "failed", "expected_error": "blank_message", "description": "Newlines only"},
+        {"id": "blank_004", "query": "\t\t", "expected_status": "failed", "expected_error": "blank_message", "description": "Tabs only"},
+        {"id": "blank_005", "query": "  \n  \t  ", "expected_status": "failed", "expected_error": "blank_message", "description": "Mixed whitespace"}
+      ]
+    },
+    "INVALID_TOO_LONG": {
+      "description": "Messages with 500+ words - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'Your message is too long. Please break it into smaller questions.'",
+      "tests": [
+        {"id": "long_001", "query": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word", "expected_status": "failed", "expected_error": "too_long", "description": "Extremely long message (500+ words of repetition)"},
+        {"id": "long_002", "query": "This is a very long document that someone pasted into the chat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.", "expected_status": "failed", "expected_error": "too_long", "description": "Long pasted content (Lorem Ipsum)"}
+      ]
+    },
+    "INVALID_HTML": {
+      "description": "HTML/code injection attempts - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "html_001", "query": "<script>alert('xss')</script>", "expected_status": "failed", "expected_error": "html_detected", "description": "Script tag injection"},
+        {"id": "html_002", "query": "Check this <button onclick='alert()'>button</button>", "expected_status": "failed", "expected_error": "html_detected", "description": "onclick handler injection"},
+        {"id": "html_003", "query": "<!DOCTYPE html><html><body>Hacked</body></html>", "expected_status": "failed", "expected_error": "html_detected", "description": "Full HTML document"},
+        {"id": "html_004", "query": "<img src=x onerror='alert(1)'>", "expected_status": "failed", "expected_error": "html_detected", "description": "Image tag with error handler"},
+        {"id": "html_005", "query": "<div onclick='window.location=\"http://evil.com\"'>Click me</div>", "expected_status": "failed", "expected_error": "html_detected", "description": "Div with onclick redirect"},
+        {"id": "html_006", "query": "Tell me <p>something</p> about data", "expected_status": "failed", "expected_error": "html_detected", "description": "HTML tag embedded in text"}
+      ]
+    },
+    "INVALID_CODE": {
+      "description": "Code snippets - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "code_001", "query": "def my_function(): pass", "expected_status": "failed", "expected_error": "code_detected", "description": "Python function definition"},
+        {"id": "code_002", "query": "function test() { return true; }", "expected_status": "failed", "expected_error": "code_detected", "description": "JavaScript function"},
+        {"id": "code_003", "query": "```python\ndef hello():\n    print('world')\n```", "expected_status": "failed", "expected_error": "code_detected", "description": "Code fence with Python"},
+        {"id": "code_004", "query": "public class Main { public static void main(String[] args) {} }", "expected_status": "failed", "expected_error": "code_detected", "description": "Java class definition"},
+        {"id": "code_005", "query": "#include <stdio.h> int main() { return 0; }", "expected_status": "failed", "expected_error": "code_detected", "description": "C code with include"},
+        {"id": "code_006", "query": "import requests How do I import data?", "expected_status": "failed", "expected_error": "code_detected", "description": "Python import statement mixed with text"}
+      ]
+    },
+    "INVALID_SPAM": {
+      "description": "Spam patterns - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "spam_001", "query": "Click here http://malicious-site.com and check this https://another-bad-site.com for amazing deals", "expected_status": "failed", "expected_error": "spam_detected", "description": "Multiple URLs with spam keywords"},
+        {"id": "spam_002", "query": "Buy now! Click here for free offer and get discount today!", "expected_status": "failed", "expected_error": "spam_detected", "description": "Commercial spam keywords"},
+        {"id": "spam_003", "query": "Check out http://example.com and http://test.com and http://demo.com", "expected_status": "failed", "expected_error": "spam_detected", "description": "Multiple URLs with check/visit keywords"},
+        {"id": "spam_004", "query": "Free offer http://site1.com click here and visit http://site2.com now!", "expected_status": "failed", "expected_error": "spam_detected", "description": "Multiple spam indicators"}
+      ]
+    },
+    "INVALID_NON_ENGLISH": {
+      "description": "Non-English languages - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'Please ask your question in English.'",
+      "tests": [
+        {"id": "non_eng_001", "query": "你好，我想提交数据请求", "expected_status": "failed", "expected_error": "non_english", "description": "Chinese language query"},
+        {"id": "non_eng_002", "query": "こんにちは、データリクエストを提出したいのですが", "expected_status": "failed", "expected_error": "non_english", "description": "Japanese language query"},
+        {"id": "non_eng_003", "query": "안녕하세요 데이터 요청을 제출하고 싶습니다", "expected_status": "failed", "expected_error": "non_english", "description": "Korean language query"},
+        {"id": "non_eng_004", "query": "مرحبا كيف يمكنني تقديم طلب بيانات", "expected_status": "failed", "expected_error": "non_english", "description": "Arabic language query"}
+      ]
+    },
+    "INVALID_EMOJIS_ONLY": {
+      "description": "Emoji-only messages - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "emoji_001", "query": "😀😁😂", "expected_status": "failed", "expected_error": "only_emojis", "description": "Only smiley emojis"},
+        {"id": "emoji_002", "query": "🎉🎊🎈", "expected_status": "failed", "expected_error": "only_emojis", "description": "Only party emojis"},
+        {"id": "emoji_003", "query": "👍👌✌", "expected_status": "failed", "expected_error": "only_emojis", "description": "Only gesture emojis"}
+      ]
+    },
+    "INVALID_SPECIAL_CHARS": {
+      "description": "Special characters only - should FAIL validation",
+      "expected_response": "validation_status: failed, error_message: 'I'm sorry, but I couldn't understand your question'",
+      "tests": [
+        {"id": "special_001", "query": "!@#$%^&*()", "expected_status": "failed", "expected_error": "only_special_chars", "description": "Only special characters"},
+        {"id": "special_002", "query": "***???!!!", "expected_status": "failed", "expected_error": "only_special_chars", "description": "Asterisks, question marks, exclamation marks"}
+      ]
+    },
+    "EDGE_CASES": {
+      "description": "Edge cases that should PASS validation",
+      "expected_response": "validation_status: passed",
+      "tests": [
+        {"id": "edge_001", "query": "What is the cost? (USD)", "expected_status": "passed", "description": "Text with special characters in parentheses"},
+        {"id": "edge_002", "query": "Can I request REQ-123456 or REQ-789?", "expected_status": "passed", "description": "Message with request IDs and hyphens"},
+        {"id": "edge_003", "query": "What's the difference between form check and review?", "expected_status": "passed", "description": "Quoted terms and apostrophe contractions"},
+        {"id": "edge_004", "query": "Is it 100% safe? What about 50% cases?", "expected_status": "passed", "description": "Numbers with percentage signs"},
+        {"id": "edge_005", "query": "[REDACTED_EMAIL_ADDRESS_2] - Is this email format correct?", "expected_status": "passed", "description": "Email address in natural context"},
+        {"id": "edge_006", "query": "Can I use my email address to register?", "expected_status": "passed", "description": "Email reference in text"},
+        {"id": "edge_007", "query": "How many requests can I submit at once?", "expected_status": "passed", "description": "Question with prepositions"},
+        {"id": "edge_008", "query": "Do you support data formats like CSV, JSON, and XML?", "expected_status": "passed", "description": "Question with acronyms"},
+        {"id": "edge_009", "query": "What's the maximum file size allowed for uploads?", "expected_status": "passed", "description": "Question about file sizes"},
+        {"id": "edge_010", "query": "Are there any restrictions on the type of data I can request?", "expected_status": "passed", "description": "Question about data restrictions"}
+      ]
+    }
+  },
+  "statistics": {
+    "total_queries": 75,
+    "valid_queries": 20,
+    "invalid_queries": 55,
+    "categories_covered": 9,
+    "notes": "INVALID_TOO_SHORT removed - MIN_MESSAGE_LENGTH changed to 1 to allow single-word greetings like 'hi', 'hello', 'help'"
+  }
+}
