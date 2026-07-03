@@ -1,0 +1,201 @@
+{
+  "test_suite": "US-04 Integration Tests - Consolidate Multiple Questions",
+  "version": "1.0",
+  "created": "2026-07-03",
+  "total_tests": 15,
+  "tests": [
+    {
+      "id": "CONSOLIDATE_001",
+      "name": "Two related submission questions",
+      "description": "Two questions about data submission should be detected",
+      "query": "How do I submit a data request? What documents do I need?",
+      "expected_result": "consolidated",
+      "expected_questions_count": 2,
+      "expected_topic_category": "submission",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Questions about submission are detected"
+    },
+    {
+      "id": "CONSOLIDATE_002",
+      "name": "Three related eligibility questions",
+      "description": "Questions about eligibility requirements should be detected",
+      "query": "What are the eligibility requirements? What documents do I need to submit? How long does the process take?",
+      "expected_result": "consolidated",
+      "expected_questions_count": 3,
+      "expected_topic_category": "eligibility",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Three questions about requirements detected"
+    },
+    {
+      "id": "CONSOLIDATE_003",
+      "name": "Process and timeline questions",
+      "description": "Questions about process and timeline should be detected",
+      "query": "What is the data request process? How many steps? When will I get the data?",
+      "expected_result": "consolidated",
+      "expected_questions_count": 3,
+      "expected_topic_category": "process",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Three process-related questions detected"
+    },
+    {
+      "id": "CONSOLIDATE_004",
+      "name": "Status and approval questions",
+      "description": "Questions about status and approval should be detected",
+      "query": "What is the status of my request? When will it be approved? How do I check progress?",
+      "expected_result": "consolidated",
+      "expected_questions_count": 3,
+      "expected_topic_category": "status",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Three status-related questions detected"
+    },
+    {
+      "id": "CONSOLIDATE_005",
+      "name": "Submission form field questions",
+      "description": "Multiple questions about form fields should be detected",
+      "query": "What information is required in the abstract field? How detailed should the data description be? Do I need to attach supporting documents?",
+      "expected_result": "consolidated",
+      "expected_questions_count": 3,
+      "expected_topic_category": "submission",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Three submission-related questions detected"
+    },
+    {
+      "id": "SEPARATE_001",
+      "name": "Different topic questions",
+      "description": "Questions on completely different topics should be detected",
+      "query": "How do I submit a data request? What is the current weather?",
+      "expected_result": "separate",
+      "expected_questions_count": 2,
+      "expected_topic_category": "mixed",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "should_consolidate": false,
+      "verification": "Both questions detected, but should not consolidate"
+    },
+    {
+      "id": "SEPARATE_002",
+      "name": "Mixed domain questions",
+      "description": "Questions from different domains should be detected separately",
+      "query": "How do I submit? Can you teach me Python? What's your favorite book?",
+      "expected_result": "separate",
+      "expected_questions_count_min": 2,
+      "expected_topic_category": "mixed",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "should_consolidate": false,
+      "verification": "Multiple questions detected from different domains"
+    },
+    {
+      "id": "SEPARATE_003",
+      "name": "Contradictory questions",
+      "description": "Contradictory questions should be detected",
+      "query": "Can I submit unlimited requests? What is the maximum limit?",
+      "expected_result": "separate",
+      "expected_questions_count": 2,
+      "expected_topic_category": "eligibility",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "should_consolidate": false,
+      "note": "Both about eligibility but contradictory",
+      "verification": "Both questions detected as separate"
+    },
+    {
+      "id": "SINGLE_001",
+      "name": "Single question",
+      "description": "Single question should not trigger multiple question handling",
+      "query": "How do I submit a data request?",
+      "expected_result": "single",
+      "expected_questions_count": 1,
+      "has_multiple_questions": false,
+      "verification": "Detected as single question, no consolidation"
+    },
+    {
+      "id": "SINGLE_002",
+      "name": "Complex single question with AND",
+      "description": "Single complex question with AND handling",
+      "query": "How do I submit a request and what documents are needed?",
+      "expected_result": "single_or_double",
+      "expected_questions_count_min": 1,
+      "expected_questions_count_max": 2,
+      "verification": "Handled as 1-2 questions"
+    },
+    {
+      "id": "EDGE_001",
+      "name": "Many questions (too many)",
+      "description": "Too many questions (6+) should be detected and flagged",
+      "query": "Question 1? Question 2? Question 3? Question 4? Question 5? Question 6?",
+      "expected_result": "too_many",
+      "expected_questions_count": 6,
+      "has_multiple_questions": true,
+      "should_consolidate": false,
+      "max_consolidation": 5,
+      "verification": "Too many questions detected"
+    },
+    {
+      "id": "EDGE_002",
+      "name": "Empty query",
+      "description": "Empty query should be handled gracefully",
+      "query": "",
+      "expected_result": "empty",
+      "expected_questions_count_min": 0,
+      "expected_questions_count_max": 1,
+      "has_multiple_questions": false,
+      "verification": "Empty input handled without error"
+    },
+    {
+      "id": "EDGE_003",
+      "name": "Whitespace only",
+      "description": "Whitespace-only query should be handled gracefully",
+      "query": "   \t\n   ",
+      "expected_result": "whitespace_only",
+      "expected_questions_count_min": 0,
+      "expected_questions_count_max": 1,
+      "has_multiple_questions": false,
+      "verification": "Whitespace input handled without error"
+    },
+    {
+      "id": "REAL_WORLD_001",
+      "name": "Real researcher query - multi-step process",
+      "description": "Realistic researcher asking about multi-step process",
+      "query": "I'm new to the data request system. What is the first step? What should I prepare beforehand? How long does the entire process take from start to end?",
+      "expected_result": "consolidated",
+      "expected_questions_count_min": 2,
+      "expected_topic_category": "process",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Multiple process-related questions detected"
+    },
+    {
+      "id": "REAL_WORLD_002",
+      "name": "Real researcher query - troubleshooting",
+      "description": "Realistic researcher troubleshooting request status",
+      "query": "I submitted my request 2 weeks ago. Why hasn't it been approved yet? Is there something wrong with my submission? What should I do next?",
+      "expected_result": "consolidated",
+      "expected_questions_count_min": 2,
+      "expected_topic_category": "status",
+      "user_role": "researcher",
+      "has_multiple_questions": true,
+      "verification": "Multiple status-related questions detected"
+    }
+  ],
+  "summary": {
+    "consolidate_tests": 5,
+    "separate_tests": 3,
+    "single_tests": 2,
+    "edge_case_tests": 3,
+    "real_world_tests": 2,
+    "expected_pass_rate": "100%"
+  },
+  "notes": [
+    "All tests assume CONSOLIDATION_ENABLED = true",
+    "Tests focus on detection accuracy, not consolidation threshold tuning",
+    "Integration tests validate that questions are correctly identified",
+    "Edge cases verify graceful handling of unusual input",
+    "Real-world tests simulate typical researcher queries"
+  ]
+}
