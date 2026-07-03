@@ -1,0 +1,784 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-02
+================================================================================
+
+This file contains all the template variables filled in for US-02: Respond Only to Research Team.
+Use this as a reference when creating new user stories.
+
+Date Created: 2026-07-03
+Template Version: 1.0
+Status: Ready for Implementation
+Estimated Effort: 2-3 days
+
+================================================================================
+SECTION 1: BASIC INFORMATION
+================================================================================
+
+US_ID = "US-02"
+US_NAME = "Respond_Only_to_Research_Team"
+DESCRIPTION = "Validates user role and restricts chatbot responses to only research team members, ignoring admin, bot, and contributor requests"
+GOAL = "Ensure the chatbot only engages with researchers and team members, preventing system abuse and maintaining appropriate access control"
+
+================================================================================
+SECTION 2: VALIDATION RULES (Order of Execution)
+================================================================================
+
+VALIDATION_RULE_1 = "Check user role is present and valid"
+VALIDATION_RULE_2 = "Check user role is in the eligible research team roles"
+VALIDATION_RULE_3 = "Check user is not a system bot or automated service"
+
+================================================================================
+SECTION 3: ELIGIBLE & INELIGIBLE ROLES
+================================================================================
+
+ELIGIBLE_ROLES = [
+    "researcher",
+    "team_member",
+    "data_request_creator",
+    "research_team_admin"
+]
+
+INELIGIBLE_ROLES = [
+    "vivli_admin",
+    "system_admin",
+    "org_admin",
+    "data_contributor",
+    "contributor",
+    "automated_notification",
+    "bot_system",
+    "irp_system",
+    "data_curator",
+    "guest"
+]
+
+ROLE_HIERARCHY = {
+    "eligible": {
+        "researcher": "Primary research user",
+        "team_member": "Research team member",
+        "data_request_creator": "User with active data request",
+        "research_team_admin": "Research team administrator"
+    },
+    "ineligible": {
+        "vivli_admin": "Vivli platform administrator",
+        "system_admin": "System administrator",
+        "org_admin": "Organization administrator",
+        "data_contributor": "Data contributor (not researcher)",
+        "contributor": "Data source contributor",
+        "automated_notification": "Automated system notification",
+        "bot_system": "System bot or automated service",
+        "irp_system": "IRP system (institutional repository)",
+        "data_curator": "Data curator role",
+        "guest": "Guest or unauthenticated user"
+    }
+}
+
+================================================================================
+SECTION 4: ERROR TYPES & MESSAGES
+================================================================================
+
+ERROR_TYPE_1 = "INVALID_ROLE"
+ERROR_TYPE_1_MESSAGE = "I'm sorry, but I can only assist research team members. If you're a researcher, please contact support to verify your account."
+WHEN_ERROR_1 = "User role cannot be determined or is not in system"
+
+ERROR_TYPE_2 = "INELIGIBLE_ROLE"
+ERROR_TYPE_2_MESSAGE = "I'm sorry, but this service is only available to research team members. Please contact the research team for assistance."
+WHEN_ERROR_2 = "User role is admin, bot, contributor, or other ineligible role"
+
+ERROR_TYPE_3 = "BOT_DETECTED"
+ERROR_TYPE_3_MESSAGE = "This is an automated system and cannot respond to non-researcher queries."
+WHEN_ERROR_3 = "User is identified as automated bot or system process"
+
+ERROR_TYPE_4 = "UNAUTHORIZED_ACCESS"
+ERROR_TYPE_4_MESSAGE = "Access denied. This service requires research team membership."
+WHEN_ERROR_4 = "User attempts to access with insufficient permissions"
+
+ERROR_TYPE_5 = "USER_ROLE_NOT_FOUND"
+ERROR_TYPE_5_MESSAGE = "Unable to verify your role. Please contact support for assistance."
+WHEN_ERROR_5 = "User information cannot be retrieved from system"
+
+================================================================================
+SECTION 5: CONFIGURATION PARAMETERS
+================================================================================
+
+PARAMETER_1 = "ROLE_CHECK_ENABLED"
+VALUE_1 = "true"
+PARAM_DESC_1 = "Enable/disable role-based access control"
+
+PARAMETER_2 = "ALLOW_SYSTEM_BOTS"
+VALUE_2 = "false"
+PARAM_DESC_2 = "Whether to allow responses to system bots (default: false)"
+
+PARAMETER_3 = "FALLBACK_TO_ESCALATION"
+VALUE_3 = "true"
+PARAM_DESC_3 = "Send ineligible users to support instead of rejecting outright"
+
+PARAMETER_4 = "CACHE_ROLE_DATA"
+VALUE_4 = "true"
+PARAM_DESC_4 = "Cache user role data for performance (default: true)"
+
+PARAMETER_5 = "CACHE_DURATION_SECONDS"
+VALUE_5 = "3600"
+PARAM_DESC_5 = "How long to cache user role data (1 hour default)"
+
+================================================================================
+SECTION 6: VALIDATION CLASS & METHODS
+================================================================================
+
+VALIDATOR_CLASS_NAME = "RoleValidator"
+
+METHOD_1_NAME = "_get_user_role"
+METHOD_1_DESC = "Extract user role from message metadata or user_id lookup"
+
+METHOD_2_NAME = "_is_eligible_role"
+METHOD_2_DESC = "Check if user role is in the eligible researchers list"
+
+METHOD_3_NAME = "_is_bot_or_system"
+METHOD_3_DESC = "Detect if user is an automated system or bot"
+
+METHOD_4_NAME = "_validate_role_in_database"
+METHOD_4_DESC = "Verify user role exists and is valid in system"
+
+METHOD_5_NAME = "_check_team_membership"
+METHOD_5_DESC = "Verify user belongs to research team"
+
+================================================================================
+SECTION 7: TEST SCENARIOS - ELIGIBLE USERS (Should ALLOW responses)
+================================================================================
+
+ELIGIBLE_USER_1 = {
+    "user_id": "researcher_001",
+    "user_name": "Dr. Alice Johnson",
+    "user_role": "researcher",
+    "organization": "MIT",
+    "expected_result": "allowed"
+}
+ELIGIBLE_DESC_1 = "Standard researcher user"
+
+ELIGIBLE_USER_2 = {
+    "user_id": "team_member_005",
+    "user_name": "Bob Smith",
+    "user_role": "team_member",
+    "organization": "Stanford",
+    "expected_result": "allowed"
+}
+ELIGIBLE_DESC_2 = "Research team member"
+
+ELIGIBLE_USER_3 = {
+    "user_id": "requester_042",
+    "user_name": "Dr. Carol White",
+    "user_role": "data_request_creator",
+    "organization": "Harvard",
+    "expected_result": "allowed"
+}
+ELIGIBLE_DESC_3 = "User with active data request"
+
+ELIGIBLE_USER_4 = {
+    "user_id": "team_admin_003",
+    "user_name": "Dr. David Brown",
+    "user_role": "research_team_admin",
+    "organization": "Yale",
+    "expected_result": "allowed"
+}
+ELIGIBLE_DESC_4 = "Research team administrator"
+
+ELIGIBLE_USER_5 = {
+    "user_id": "researcher_999",
+    "user_name": "Prof. Emily Davis",
+    "user_role": "researcher",
+    "organization": "Columbia",
+    "expected_result": "allowed"
+}
+ELIGIBLE_DESC_5 = "Researcher from different organization"
+
+================================================================================
+SECTION 8: TEST SCENARIOS - INELIGIBLE USERS (Should DENY responses)
+================================================================================
+
+INELIGIBLE_USER_1 = {
+    "user_id": "admin_001",
+    "user_name": "System Admin",
+    "user_role": "vivli_admin",
+    "organization": "Vivli",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_1 = "Vivli platform administrator"
+
+INELIGIBLE_USER_2 = {
+    "user_id": "contributor_042",
+    "user_name": "John Data",
+    "user_role": "data_contributor",
+    "organization": "Hospital A",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_2 = "Data contributor (not researcher)"
+
+INELIGIBLE_USER_3 = {
+    "user_id": "bot_system_01",
+    "user_name": "Automated Notification",
+    "user_role": "bot_system",
+    "organization": "System",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_3 = "Automated bot or system service"
+
+INELIGIBLE_USER_4 = {
+    "user_id": "org_admin_15",
+    "user_name": "Org Administrator",
+    "user_role": "org_admin",
+    "organization": "University B",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_4 = "Organization administrator (not researcher)"
+
+INELIGIBLE_USER_5 = {
+    "user_id": "irp_system",
+    "user_name": "IRP System",
+    "user_role": "irp_system",
+    "organization": "System",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_5 = "Institutional Repository system"
+
+INELIGIBLE_USER_6 = {
+    "user_id": "guest_123",
+    "user_name": "Guest User",
+    "user_role": "guest",
+    "organization": "Unknown",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_6 = "Guest or unauthenticated user"
+
+INELIGIBLE_USER_7 = {
+    "user_id": "curator_88",
+    "user_name": "Data Curator",
+    "user_role": "data_curator",
+    "organization": "Data Center",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_7 = "Data curator role"
+
+INELIGIBLE_USER_8 = {
+    "user_id": "system_admin_02",
+    "user_name": "System Administrator",
+    "user_role": "system_admin",
+    "organization": "System",
+    "expected_result": "denied"
+}
+INELIGIBLE_DESC_8 = "System administrator"
+
+================================================================================
+SECTION 9: TEST SCENARIOS - EDGE CASES
+================================================================================
+
+EDGE_CASE_1 = {
+    "user_id": "unknown_user",
+    "user_name": "Unknown",
+    "user_role": null,
+    "expected_result": "denied",
+    "description": "User role cannot be determined"
+}
+EDGE_CASE_DESC_1 = "Missing user role in request"
+
+EDGE_CASE_2 = {
+    "user_id": "invalid_role",
+    "user_name": "Test User",
+    "user_role": "invalid_role_xyz",
+    "expected_result": "denied",
+    "description": "Role does not exist in system"
+}
+EDGE_CASE_DESC_2 = "Invalid or unknown role"
+
+EDGE_CASE_3 = {
+    "user_id": "researcher_deactivated",
+    "user_name": "Deactivated User",
+    "user_role": "researcher",
+    "account_status": "deactivated",
+    "expected_result": "denied",
+    "description": "Researcher account is deactivated"
+}
+EDGE_CASE_DESC_3 = "Deactivated researcher account"
+
+EDGE_CASE_4 = {
+    "user_id": "researcher_suspended",
+    "user_name": "Suspended User",
+    "user_role": "researcher",
+    "account_status": "suspended",
+    "expected_result": "denied",
+    "description": "Researcher account is suspended"
+}
+EDGE_CASE_DESC_4 = "Suspended researcher account"
+
+EDGE_CASE_5 = {
+    "user_id": "new_team_member",
+    "user_name": "New Member",
+    "user_role": "team_member",
+    "account_status": "active",
+    "expected_result": "allowed",
+    "description": "New team member (active)"
+}
+EDGE_CASE_DESC_5 = "New research team member"
+
+================================================================================
+SECTION 10: INTEGRATION WITH CHAT REQUEST
+================================================================================
+
+REQUEST_STRUCTURE = {
+    "query": "How do I submit a data request?",
+    "user_id": "researcher_001",
+    "user_name": "Dr. Alice Johnson",
+    "user_role": "researcher",
+    "timestamp": "2026-07-03T14:30:00Z",
+    "chat_id": "chat_abc123",
+    "organization": "MIT"
+}
+
+RESPONSE_STRUCTURE_ALLOWED = {
+    "query_id": "uuid",
+    "answer": "To submit a data request...",
+    "intent": "FAQ",
+    "confidence_score": 0.85,
+    "role_check": {
+        "validation_status": "passed",
+        "user_role": "researcher",
+        "access_granted": true
+    }
+}
+
+RESPONSE_STRUCTURE_DENIED = {
+    "query_id": "uuid",
+    "answer": "I'm sorry, but this service is only available to research team members.",
+    "intent": "UNKNOWN",
+    "confidence_score": 0.0,
+    "role_check": {
+        "validation_status": "failed",
+        "user_role": "vivli_admin",
+        "access_granted": false,
+        "error": "ineligible_role"
+    }
+}
+
+================================================================================
+SECTION 11: ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1 = "Role validation logic is implemented and tested"
+AC_2 = "All eligible roles (researcher, team_member, etc.) grant access"
+AC_3 = "All ineligible roles (admin, bot, contributor, etc.) deny access"
+AC_4 = "User with no role information are denied access"
+AC_5 = "Bot/system users are properly detected and denied"
+AC_6 = "Error messages are user-friendly and don't expose role details"
+AC_7 = "Role data is cached appropriately for performance"
+AC_8 = "Integration into /chat endpoint works correctly"
+AC_9 = "Role validation runs before intent classification"
+AC_10 = "Unit tests cover all eligible and ineligible roles"
+AC_11 = "Integration tests verify role-based access control"
+AC_12 = "Documentation is complete with role mapping"
+
+================================================================================
+SECTION 12: TEST STATISTICS
+================================================================================
+
+TOTAL_TEST_CASES = "15"
+ELIGIBLE_ROLES_TESTS = "4"
+INELIGIBLE_ROLES_TESTS = "8"
+EDGE_CASES_TESTS = "5"
+
+TEST_BREAKDOWN = {
+    "eligible_researchers": 5,
+    "ineligible_admins": 2,
+    "ineligible_bots": 2,
+    "ineligible_contributors": 2,
+    "ineligible_other": 1,
+    "edge_missing_role": 1,
+    "edge_invalid_role": 1,
+    "edge_deactivated": 1,
+    "edge_suspended": 1,
+    "edge_new_member": 1
+}
+
+TARGET_PASS_RATE = "100%"
+MINIMUM_CODE_COVERAGE = "85%"
+
+================================================================================
+SECTION 13: IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT_FUNCTION = "validate_user_role(message: ChatRequest) -> Tuple[bool, ValidationError]"
+
+FUNCTION_SIGNATURE = """
+def validate_user_role(message: ChatRequest) -> Tuple[bool, str]:
+    '''
+    Validate user role and determine if they should receive bot response.
+
+    Args:
+        message: ChatRequest object with user_id, user_role, etc.
+
+    Returns:
+        (is_eligible, error_message)
+        - is_eligible: True if user is eligible researcher, False otherwise
+        - error_message: User-friendly message if not eligible
+    '''
+"""
+
+INTEGRATION_POINT = "/chat endpoint in main.py"
+EXECUTION_STEP = "Before intent classification and response generation (Step 1)"
+
+RESPONSE_FORMAT_ALLOWED = {
+    "validation_status": "passed",
+    "user_role_valid": true,
+    "access_granted": true,
+    "continue_processing": true
+}
+
+RESPONSE_FORMAT_DENIED = {
+    "validation_status": "failed",
+    "user_role_valid": false,
+    "access_granted": false,
+    "error_type": "ineligible_role",
+    "error_message": "I'm sorry, but this service is only available to research team members.",
+    "continue_processing": false
+}
+
+================================================================================
+SECTION 14: DATA SOURCES FOR ROLE LOOKUP
+================================================================================
+
+ROLE_SOURCE_1 = "Message metadata (message.user_role)"
+ROLE_SOURCE_1_FORMAT = "Direct role in request: {\"user_role\": \"researcher\"}"
+ROLE_SOURCE_1_PRIORITY = "1 (Primary - fastest)"
+
+ROLE_SOURCE_2 = "User database lookup (query by user_id)"
+ROLE_SOURCE_2_FORMAT = "SELECT role FROM users WHERE user_id = 'user_123'"
+ROLE_SOURCE_2_PRIORITY = "2 (Secondary - fallback)"
+
+ROLE_SOURCE_3 = "Authentication system (JWT claims)"
+ROLE_SOURCE_3_FORMAT = "Decode JWT token and read role from claims"
+ROLE_SOURCE_3_PRIORITY = "3 (Tertiary - if available)"
+
+CACHING_STRATEGY = "Cache role lookups for 1 hour with user_id as key"
+CACHE_INVALIDATION = "Clear cache on logout or role change events"
+
+================================================================================
+SECTION 15: ERROR HANDLING & FALLBACK
+================================================================================
+
+SCENARIO_1 = "Role lookup fails"
+FALLBACK_1 = "Deny access with 'USER_ROLE_NOT_FOUND' error"
+ESCALATION_1 = "Log error and alert ops team"
+
+SCENARIO_2 = "User role is ambiguous"
+FALLBACK_2 = "Deny access with 'INVALID_ROLE' error"
+ESCALATION_2 = "Route to support team for manual verification"
+
+SCENARIO_3 = "Cache is stale"
+FALLBACK_3 = "Perform fresh role lookup from authoritative source"
+ESCALATION_3 = "No escalation needed - fallback is automatic"
+
+SCENARIO_4 = "Role not in ELIGIBLE or INELIGIBLE list"
+FALLBACK_4 = "Deny access (default deny on unknown role)"
+ESCALATION_4 = "Alert admin to add new role to config"
+
+================================================================================
+SECTION 16: KEY DIFFERENCES FROM US-05
+================================================================================
+
+US_05_IS = "Input validation (checking WHAT is being asked)"
+US_02_IS = "Access control (checking WHO is asking)"
+
+US_05_CHECKS = [
+    "Message format",
+    "Message length",
+    "Malicious content",
+    "Language",
+    "Spam patterns"
+]
+
+US_02_CHECKS = [
+    "User identity",
+    "User role",
+    "Permissions",
+    "Access eligibility"
+]
+
+EXECUTION_ORDER = "US-02 runs BEFORE US-05 (check WHO before WHAT)"
+
+RESPONSIBILITY = "US-02 gates access; US-05 validates input"
+
+================================================================================
+SECTION 17: ROLE MAPPING DOCUMENTATION
+================================================================================
+
+RESEARCHER_ROLES = {
+    "researcher": "Principal role for research users",
+    "team_member": "Member of research team",
+    "data_request_creator": "User who created a data request",
+    "research_team_admin": "Administrator of research team"
+}
+
+ADMIN_ROLES = {
+    "vivli_admin": "Vivli platform administrator",
+    "system_admin": "System/infrastructure administrator",
+    "org_admin": "Organization administrator"
+}
+
+SYSTEM_ROLES = {
+    "bot_system": "Automated system bot",
+    "automated_notification": "Automated notification service",
+    "irp_system": "Institutional Repository system"
+}
+
+DATA_ROLES = {
+    "data_contributor": "Entity that contributes data",
+    "data_curator": "Data management specialist",
+    "contributor": "General contributor role"
+}
+
+OTHER_ROLES = {
+    "guest": "Guest or unauthenticated user"
+}
+
+================================================================================
+SECTION 18: SECURITY CONSIDERATIONS
+================================================================================
+
+SECURITY_1 = "Never expose internal role names to users"
+SECURITY_1_IMPL = "Use generic error messages"
+
+SECURITY_2 = "Don't allow role escalation via user input"
+SECURITY_2_IMPL = "Always fetch role from authoritative source, not from request"
+
+SECURITY_3 = "Verify user identity before checking role"
+SECURITY_3_IMPL = "Require authentication before role validation"
+
+SECURITY_4 = "Log all access denied events"
+SECURITY_4_IMPL = "Create audit trail with user_id, role, timestamp"
+
+SECURITY_5 = "Use allowlist (eligible roles), not blocklist"
+SECURITY_5_IMPL = "Default deny if role not in ELIGIBLE_ROLES list"
+
+================================================================================
+SECTION 19: TESTING COMMANDS
+================================================================================
+
+UNIT_TEST_COMMAND = "pytest user_stories/US-02-Respond_Only_to_Research_Team/tests/ -v"
+UNIT_TEST_EXPECTED = "All 15 test cases pass"
+
+COVERAGE_TEST = "pytest user_stories/US-02-Respond_Only_to_Research_Team/tests/ --cov=implementation --cov-report=html"
+COVERAGE_TARGET = ">85% code coverage"
+
+INTEGRATION_TEST = "python user_stories/US-02-Respond_Only_to_Research_Team/test_queries.py --verbose"
+INTEGRATION_EXPECTED = "All role validation scenarios work in /chat endpoint"
+
+MANUAL_TEST_ELIGIBLE = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "X-User-ID: researcher_001" \
+  -H "X-User-Role: researcher" \
+  -d '{"query": "How do I submit a data request?"}'
+Expected: validation_status: "passed", response generated
+"""
+
+MANUAL_TEST_INELIGIBLE = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "X-User-ID: admin_001" \
+  -H "X-User-Role: vivli_admin" \
+  -d '{"query": "How do I submit a data request?"}'
+Expected: validation_status: "failed", access denied message
+"""
+
+================================================================================
+SECTION 20: CURL EXAMPLES FOR TESTING
+================================================================================
+
+TEST_ELIGIBLE_RESEARCHER = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{
+    "query": "How do I submit a data request?",
+    "user_id": "researcher_001",
+    "user_role": "researcher"
+  }'
+Expected: Access granted, normal response
+"""
+
+TEST_INELIGIBLE_ADMIN = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{
+    "query": "How do I submit a data request?",
+    "user_id": "admin_001",
+    "user_role": "vivli_admin"
+  }'
+Expected: Access denied, "only available to research team" message
+"""
+
+TEST_INELIGIBLE_BOT = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{
+    "query": "Status update",
+    "user_id": "bot_system_01",
+    "user_role": "bot_system"
+  }'
+Expected: Access denied, bot detection error
+"""
+
+TEST_MISSING_ROLE = """
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{
+    "query": "How do I submit a data request?",
+    "user_id": "unknown_user"
+  }'
+Expected: Access denied, "unable to verify role" message
+"""
+
+================================================================================
+SECTION 21: IMPLEMENTATION CHECKLIST
+================================================================================
+
+CODE_IMPLEMENTATION = [
+    "Create RoleValidator class",
+    "Implement _get_user_role() method",
+    "Implement _is_eligible_role() method",
+    "Implement _is_bot_or_system() method",
+    "Implement caching mechanism",
+    "Add error message mapping",
+    "Integrate into /chat endpoint",
+    "Add logging and audit trail"
+]
+
+TESTING = [
+    "Write unit tests for eligible roles",
+    "Write unit tests for ineligible roles",
+    "Write unit tests for edge cases",
+    "Write integration tests",
+    "Test cache invalidation",
+    "Test error handling",
+    "Verify no role escalation possible"
+]
+
+DOCUMENTATION = [
+    "Write README.md with role definitions",
+    "Create ACCEPTANCE_CRITERIA.md",
+    "Document HOW_TO_TEST.md",
+    "Create QUICK_REFERENCE.md",
+    "Document role mapping",
+    "Add security considerations",
+    "Create curl examples"
+]
+
+DEPLOYMENT = [
+    "Code review by peer",
+    "All tests passing (>85% coverage)",
+    "Documentation complete",
+    "Performance tested (cache working)",
+    "Security review completed",
+    "Ready for staging"
+]
+
+================================================================================
+SECTION 22: SUMMARY & DEPLOYMENT INFO
+================================================================================
+
+USER_STORY_ID = "US-02"
+USER_STORY_NAME = "Respond Only to Research Team"
+STATUS = "READY FOR IMPLEMENTATION"
+ESTIMATED_EFFORT = "2-3 days"
+
+KEY_METRICS = {
+    "eligible_roles": 4,
+    "ineligible_roles": 10,
+    "test_cases": 15,
+    "target_coverage": ">85%",
+    "target_pass_rate": "100%",
+    "cache_duration": "3600 seconds (1 hour)"
+}
+
+DEPLOYMENT_CHECKLIST = {
+    "code_complete": false,
+    "unit_tests_passing": false,
+    "integration_tests_passing": false,
+    "documentation_complete": false,
+    "security_review_done": false,
+    "performance_approved": false,
+    "ready_for_production": false
+}
+
+INTEGRATION_SEQUENCE = [
+    "1. US-02 (this story) - Role validation",
+    "2. US-05 - Input validation",
+    "3. US-01 - Chat scope enforcement",
+    "4. US-03 - Back-to-back message handling",
+    "5. US-04 - Query decomposition"
+]
+
+================================================================================
+SECTION 23: KEY LEARNINGS FROM US-05 (REFERENCE)
+================================================================================
+
+BEST_PRACTICE_1 = "Use enums for error types"
+BEST_PRACTICE_1_WHY = "Prevents string duplication and ensures consistency"
+
+BEST_PRACTICE_2 = "Implement user-friendly error messages"
+BEST_PRACTICE_2_WHY = "Users don't need to see technical details"
+
+BEST_PRACTICE_3 = "Create comprehensive test suite"
+BEST_PRACTICE_3_WHY = "Catches edge cases and prevents regressions"
+
+BEST_PRACTICE_4 = "Document error scenarios clearly"
+BEST_PRACTICE_4_WHY = "Makes debugging and maintenance easier"
+
+BEST_PRACTICE_5 = "Use logging for audit trails"
+BEST_PRACTICE_5_WHY = "Essential for security and debugging"
+
+BEST_PRACTICE_6 = "Cache lookups when appropriate"
+BEST_PRACTICE_6_WHY = "Improves performance for repeated queries"
+
+BEST_PRACTICE_7 = "Default to deny (allowlist approach)"
+BEST_PRACTICE_7_WHY = "More secure than blocklist approach"
+
+================================================================================
+SECTION 24: REFERENCE FILES & LINKS
+================================================================================
+
+TEMPLATE_REFERENCE = "TEMPLATE_USER_STORY.md"
+TEMPLATE_SETUP = "TEMPLATE_SETUP_GUIDE.md"
+TEMPLATE_EXAMPLE = "US-05-Graceful_Edge_Case_Handling/ (Reference implementation)"
+TEMPLATE_INDEX = "TEMPLATE_INDEX.md (Complete system overview)"
+
+US_05_REFERENCE = "user_stories/US-05-Graceful_Edge_Case_Handling/"
+US_05_VALIDATOR = "rag-demo/input_validator.py"
+US_05_TESTS = "user_stories/US-05-Graceful_Edge_Case_Handling/tests/test_input_validator.py"
+
+VIVLI_DOCUMENTATION = "IMPLEMENTABLE_STORIES_NOW.md (Full requirements)"
+USER_STORIES = "USER_STORIES_ANALYSIS.md (All stories overview)"
+
+================================================================================
+END OF TEMPLATE PROMPT
+================================================================================
+
+HOW TO USE THIS FILE:
+1. Understand what US-02 needs to do (role-based access control)
+2. Reference this when implementing the role validator
+3. Use as checklist during development
+4. Share with team for code review
+5. Compare with US-05 to see different validation patterns
+
+KEY DIFFERENCES FROM US-05:
+- US-05: Validates WHAT (input content)
+- US-02: Validates WHO (user identity/role)
+- US-02 runs BEFORE US-05 in the chain
+
+CREATED: 2026-07-03
+LAST UPDATED: 2026-07-03
+VERSION: 1.0
+ESTIMATED EFFORT: 2-3 days
+PRIORITY: HIGH (blocks other features)
+
+================================================================================

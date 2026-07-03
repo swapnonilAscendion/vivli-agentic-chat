@@ -11,6 +11,14 @@ from retrieval import Retrieval
 from llm import LLMClient
 from intent_classifier import IntentClassifier
 from response_formatter import ResponseFormatter
+from input_validator import validate_input
+from pathlib import Path
+import sys
+
+# Add user_stories path for role validator import
+user_stories_path = Path(__file__).parent.parent / "user_stories" / "US-02-Respond_Only_to_Research_Team" / "implementation"
+sys.path.insert(0, str(user_stories_path))
+from role_validator import validate_user_role
 
 # Configure logging
 logging.basicConfig(
@@ -97,10 +105,12 @@ async def chat(request: ChatRequest) -> ChatResponse:
     Send a query to the Vivli RAG chatbot and get an intelligent response.
 
     The system will:
-    1. Classify your query intent (FAQ, Data Request, Escalation, etc.)
-    2. Search the knowledge base for relevant documents
-    3. Generate a contextual response using LLM
-    4. Format the response with proper citations and disclaimers
+    0. Validate user role for access control (US-02)
+    1. Validate the input for edge cases and invalid content (US-05)
+    2. Classify your query intent (FAQ, Data Request, Escalation, etc.)
+    3. Search the knowledge base for relevant documents
+    4. Generate a contextual response using LLM
+    5. Format the response with proper citations and disclaimers
 
     **Example queries:**
     - "How do I submit a data request?"
@@ -118,6 +128,47 @@ async def chat(request: ChatRequest) -> ChatResponse:
     start_time = time.time()
 
     try:
+        # Step 0: Validate user role (US-02)
+        logger.info(f"[{query_id}] Validating user role: {request.user_role}...")
+        is_eligible, role_error = validate_user_role(request.user_role, request.user_id)
+
+        if not is_eligible:
+            logger.warning(f"[{query_id}] Role validation failed: {role_error}")
+            latency_ms = int((time.time() - start_time) * 1000)
+            return ChatResponse(
+                query_id=query_id,
+                answer=role_error,
+                intent="UNKNOWN",
+                confidence_score=0.0,
+                sources=[],
+                latency_ms=latency_ms,
+                metadata={
+                    "validation_status": "failed",
+                    "error": role_error,
+                    "error_type": "role_validation_failed",
+                },
+            )
+
+        # Step 1: Validate input (US-05)
+        logger.info(f"[{query_id}] Validating input: {request.query[:100]}...")
+        is_valid, error_message = validate_input(request.query)
+
+        if not is_valid:
+            logger.warning(f"[{query_id}] Input validation failed: {error_message}")
+            latency_ms = int((time.time() - start_time) * 1000)
+            return ChatResponse(
+                query_id=query_id,
+                answer=error_message,
+                intent="UNKNOWN",
+                confidence_score=0.0,
+                sources=[],
+                latency_ms=latency_ms,
+                metadata={
+                    "validation_status": "failed",
+                    "error": error_message,
+                },
+            )
+
         # Step 1: Classify intent
         logger.info(f"[{query_id}] Processing query: {request.query[:100]}...")
         classification = intent_classifier.classify(request.query)

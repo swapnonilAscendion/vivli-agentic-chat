@@ -7,10 +7,19 @@ class ChatRequest(BaseModel):
     """Request model for /chat endpoint"""
 
     query: str = Field(
-        ...,
-        min_length=1,
+        default="",
         description="Your question about Vivli platform, data requests, or procedures",
         example="How do I submit a data request?"
+    )
+    user_role: str = Field(
+        default="",
+        description="User role for access control (researcher, team_member, vivli_admin, etc.)",
+        example="researcher"
+    )
+    user_id: Optional[str] = Field(
+        default=None,
+        description="Unique identifier for the user (optional)",
+        example="user_001"
     )
 
 
