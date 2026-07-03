@@ -1,0 +1,209 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-09
+================================================================================
+
+USER STORY: Answer data request related queries in real time
+DESCRIPTION: Answer questions about specific data requests with real-time information
+GOAL: Researchers can ask about their request status and get accurate, up-to-date answers
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 13 story points / 5-6 days
+
+================================================================================
+DATA SOURCES
+================================================================================
+
+PRIMARY: Vivli Data Request API
+  - Real-time request status
+  - Request metadata
+  - Form submission data
+  - Timeline information
+
+SECONDARY: Knowledge Base
+  - Process information
+  - Policy details
+  - Approval criteria
+
+TERTIARY: Request History
+  - Previous interactions
+  - Change log
+  - Notes and comments
+
+================================================================================
+QUERY TYPES HANDLED
+================================================================================
+
+TYPE_1: Status queries
+  Example: "What's the status of my request?"
+  Answer: Current stage + timeline
+
+TYPE_2: Specific field queries
+  Example: "Can I modify my data request?"
+  Answer: Policy-based response + process steps
+
+TYPE_3: Timeline queries
+  Example: "How long does form-check take?"
+  Answer: Expected timeline + SLA information
+
+TYPE_4: Access queries
+  Example: "When will I get access to the data?"
+  Answer: Process timeline + next steps
+
+================================================================================
+VALIDATION RULES
+================================================================================
+
+RULE_1: Extract request ID from query or user context
+RULE_2: Verify request ID exists and is valid
+RULE_3: Verify user owns or can access the request
+RULE_4: Fetch fresh data from API (no cached stale data)
+RULE_5: Verify data freshness (< 5 minutes old)
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: REQUEST_NOT_FOUND
+ERROR_1_MESSAGE: "Unable to find that data request. Please verify the request ID."
+ERROR_1_WHEN: Invalid or non-existent request ID
+
+ERROR_2_TYPE: PERMISSION_DENIED
+ERROR_2_MESSAGE: "You don't have access to that request."
+ERROR_2_WHEN: User not owner/authorized
+
+ERROR_3_TYPE: API_ERROR
+ERROR_3_MESSAGE: "Unable to retrieve request information. Please try again."
+ERROR_3_WHEN: API failure
+
+ERROR_4_TYPE: STALE_DATA
+ERROR_4_MESSAGE: "Unable to get current status. Please try again in a moment."
+ERROR_4_WHEN: Data more than 5 minutes old
+
+ERROR_5_TYPE: RATE_LIMIT
+ERROR_5_MESSAGE: "Too many requests. Please wait a moment and try again."
+ERROR_5_WHEN: API rate limit exceeded
+
+================================================================================
+TEST SCENARIOS - VALID REQUESTS
+================================================================================
+
+TEST_1:
+  request_id: "REQ-001"
+  user_id: "researcher_001"
+  owner: true
+  api_status: "online"
+  expected_result: "success with status"
+  description: "Owner querying own request"
+
+TEST_2:
+  request_id: "REQ-002"
+  user_id: "researcher_001"
+  team_member: true
+  api_status: "online"
+  expected_result: "success with status"
+  description: "Team member querying request"
+
+TEST_3:
+  request_id: "REQ-001"
+  user_id: "researcher_001"
+  status: "in_form_check"
+  expected_result: "return current stage + timeline"
+  description: "Query request in form-check stage"
+
+================================================================================
+TEST SCENARIOS - INVALID REQUESTS
+================================================================================
+
+TEST_4:
+  request_id: "INVALID"
+  user_id: "researcher_001"
+  expected_result: "error (not found)"
+  description: "Invalid request ID"
+
+TEST_5:
+  request_id: "REQ-002"
+  user_id: "researcher_003"
+  owner: false
+  expected_result: "error (permission denied)"
+  description: "User without access"
+
+TEST_6:
+  request_id: "REQ-001"
+  api_status: "down"
+  expected_result: "error (API error)"
+  description: "API unavailable"
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: API_TIMEOUT_SECONDS = 5
+DESC_1: Maximum time to fetch from API
+
+PARAM_2: DATA_FRESHNESS_THRESHOLD = 300
+DESC_2: Maximum data age in seconds (5 minutes)
+
+PARAM_3: CACHE_ENABLED = false
+DESC_3: Disable caching for real-time data
+
+PARAM_4: RATE_LIMIT_REQUESTS_PER_MINUTE = 60
+DESC_4: Rate limit per user
+
+PARAM_5: RETRY_ATTEMPTS = 2
+DESC_5: Number of retry attempts on API failure
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: answer_data_request_query(intent_result: IntentClassification, message: ChatRequest) -> str
+
+FUNCTION_SIGNATURE:
+def answer_data_request_query(intent_result: IntentClassification, message: ChatRequest) -> str:
+    '''
+    Answer data request related query with real-time data.
+
+    Args:
+        intent_result: IntentClassification indicating DATA_REQUEST_RELATED
+        message: ChatRequest with user and query info
+
+    Returns:
+        Natural language response with current request status
+    '''
+
+FLOW:
+1. Extract request ID from query/context
+2. Validate request ID format
+3. Check user permissions
+4. Fetch fresh data from Vivli API
+5. Check data freshness
+6. Format response with status + timeline
+7. Include next steps
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Request ID extraction works
+AC_2: Permission checks prevent unauthorized access
+AC_3: Data fetched in real-time (no stale cache)
+AC_4: Responses include current status
+AC_5: Timeline information accurate
+AC_6: API errors handled gracefully
+AC_7: User-friendly error messages
+AC_8: Response time < 3 seconds
+AC_9: Unit tests cover all scenarios
+AC_10: Integration with API verified
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: HIGH
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 13 story points / 5-6 days
+
+================================================================================

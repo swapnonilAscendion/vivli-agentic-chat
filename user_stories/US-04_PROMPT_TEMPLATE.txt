@@ -1,0 +1,180 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-04
+================================================================================
+
+USER STORY: Consolidate multiple questions in one message
+DESCRIPTION: Identify and consolidate multiple questions in a single message into one response
+GOAL: Allow researchers to ask several questions at once and receive one consolidated answer
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 8 story points / 3-4 days
+
+================================================================================
+VALIDATION RULES
+================================================================================
+
+RULE_1: Detect multiple questions in single message
+RULE_2: Separate and identify each distinct question
+RULE_3: Determine if questions are related or unrelated
+RULE_4: Route to appropriate handlers
+RULE_5: Consolidate responses into single answer
+
+================================================================================
+ELIGIBLE CONDITIONS (CONSOLIDATE)
+================================================================================
+
+1. Single message with 2+ distinct questions
+2. Questions on related/similar topics
+3. Questions belonging to same intent category
+4. All questions answerable by same source
+
+================================================================================
+INELIGIBLE CONDITIONS (SEPARATE/ESCALATE)
+================================================================================
+
+1. Questions on completely different topics
+2. Questions requiring different routing paths
+3. Questions to different data sources
+4. Contradictory or conflicting questions
+5. Questions too diverse to consolidate
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: MULTIPLE_QUESTIONS_ERROR
+ERROR_1_MESSAGE: "I noticed you asked multiple questions on different topics. Please ask them one at a time for clearer responses."
+ERROR_1_WHEN: Questions too diverse to consolidate
+
+ERROR_2_TYPE: CONSOLIDATION_FAILED
+ERROR_2_MESSAGE: "Unable to consolidate your questions. Please rephrase and try again."
+ERROR_2_WHEN: Question parsing fails
+
+ERROR_3_TYPE: MIXED_INTENTS
+ERROR_3_MESSAGE: "Your questions belong to different categories. Please ask them separately."
+ERROR_3_WHEN: Questions have different intent classifications
+
+================================================================================
+TEST SCENARIOS - CONSOLIDATED (Should CONSOLIDATE)
+================================================================================
+
+TEST_1:
+  questions: 2
+  topic: "data_request_submission"
+  expected_result: "consolidated"
+  description: "Two related questions on data request submission"
+
+TEST_2:
+  questions: 3
+  topic: "eligibility_criteria"
+  expected_result: "consolidated"
+  description: "Three related questions on eligibility"
+
+TEST_3:
+  questions: 2
+  topic: "process_timeline"
+  expected_result: "consolidated"
+  description: "Questions about same process with timeline aspects"
+
+TEST_4:
+  questions: 4
+  topic: "form_fields"
+  expected_result: "consolidated"
+  description: "Multiple questions about different form fields"
+
+================================================================================
+TEST SCENARIOS - SEPARATE (Should SEPARATE)
+================================================================================
+
+TEST_5:
+  questions: 2
+  topic: "mixed (submission + status)"
+  expected_result: "separate"
+  description: "Questions on completely different topics"
+
+TEST_6:
+  questions: 3
+  topic: "mixed (technical + process + policy)"
+  expected_result: "separate"
+  description: "Questions requiring different knowledge sources"
+
+TEST_7:
+  questions: 2
+  intent: "mixed (FAQ + DATA_REQUEST)"
+  expected_result: "separate"
+  description: "Questions with different intent classifications"
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: QUESTION_CONSOLIDATION_ENABLED = true
+DESC_1: Enable/disable question consolidation
+
+PARAM_2: MIN_QUESTIONS_TO_CONSOLIDATE = 2
+DESC_2: Minimum questions to trigger consolidation
+
+PARAM_3: MAX_QUESTIONS_PER_CONSOLIDATION = 5
+DESC_3: Maximum questions to consolidate together
+
+PARAM_4: TOPIC_SIMILARITY_THRESHOLD = 0.75
+DESC_4: Minimum similarity to consolidate questions
+
+PARAM_5: ALLOW_MIXED_INTENTS = false
+DESC_5: Whether to allow questions with different intents
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: consolidate_multiple_questions(message: ChatRequest) -> Tuple[List[str], List[List[str]]]
+
+FUNCTION_SIGNATURE:
+def consolidate_multiple_questions(message: ChatRequest) -> Tuple[List[str], List[List[str]]]:
+    '''
+    Identify and consolidate multiple questions in a message.
+
+    Args:
+        message: ChatRequest with query text
+
+    Returns:
+        (consolidated_questions, question_groups)
+    '''
+
+INTEGRATION_POINT: /chat endpoint in main.py
+EXECUTION_STEP: After US-03 message grouping, before US-07 intent classification
+
+ALGORITHM:
+1. Parse message text for question delimiters
+2. Extract individual questions
+3. Calculate similarity between questions
+4. Group similar questions
+5. Return consolidated or separate questions
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Multiple question detection is accurate
+AC_2: Related questions are consolidated
+AC_3: Unrelated questions are separated
+AC_4: Response addresses all questions
+AC_5: Consolidated answer is readable
+AC_6: Question order is maintained
+AC_7: Unit tests cover all scenarios
+AC_8: Integration tests in /chat endpoint work
+AC_9: Documentation explains consolidation logic
+AC_10: Edge cases handled (single question, contradictions)
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: MEDIUM
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 8 story points / 3-4 days
+
+================================================================================

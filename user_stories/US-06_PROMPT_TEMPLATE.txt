@@ -1,0 +1,194 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-06
+================================================================================
+
+USER STORY: Parse researcher chat attachments
+DESCRIPTION: Parse and extract content from attachments included in researcher messages
+GOAL: Allow researchers to include files in chat and have the bot use their content when responding
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 3 story points / 1-2 days
+
+================================================================================
+VALIDATION RULES
+================================================================================
+
+RULE_1: Check attachment exists and is accessible
+RULE_2: Verify file type is supported
+RULE_3: Check file size is within limits (max 10MB)
+RULE_4: Extract and parse attachment content
+RULE_5: Make content available to downstream processors
+
+================================================================================
+SUPPORTED FORMATS
+================================================================================
+
+1. PDF documents (.pdf)
+2. Word documents (.docx)
+3. Excel spreadsheets (.xlsx)
+4. Text files (.txt)
+5. CSV files (.csv)
+
+================================================================================
+FILE SIZE LIMITS
+================================================================================
+
+MAX_FILE_SIZE: 10 MB
+MAX_PDF_PAGES: 100
+MAX_EXCEL_ROWS: 10000
+MAX_CSV_ROWS: 5000
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: ATTACHMENT_NOT_FOUND
+ERROR_1_MESSAGE: "Unable to access the attachment. Please try again or upload a different file."
+ERROR_1_WHEN: Attachment missing or inaccessible
+
+ERROR_2_TYPE: UNSUPPORTED_FORMAT
+ERROR_2_MESSAGE: "This file type is not supported. Please use PDF, Word, Excel, or text files."
+ERROR_2_WHEN: File format not in supported list
+
+ERROR_3_TYPE: FILE_TOO_LARGE
+ERROR_3_MESSAGE: "The attachment is too large. Please use files under 10MB."
+ERROR_3_WHEN: File size exceeds limit
+
+ERROR_4_TYPE: PARSING_FAILED
+ERROR_4_MESSAGE: "Unable to read the file. Please ensure the file is valid and try again."
+ERROR_4_WHEN: File parsing fails
+
+ERROR_5_TYPE: CORRUPT_FILE
+ERROR_5_MESSAGE: "The file appears to be corrupted. Please upload a valid file."
+ERROR_5_WHEN: File structure is invalid
+
+================================================================================
+TEST SCENARIOS - VALID ATTACHMENTS
+================================================================================
+
+TEST_1:
+  file: "document.pdf"
+  size: "5MB"
+  pages: 20
+  expected_result: "parsed"
+  description: "Valid PDF document"
+
+TEST_2:
+  file: "form.docx"
+  size: "2MB"
+  expected_result: "parsed"
+  description: "Valid Word document"
+
+TEST_3:
+  file: "data.xlsx"
+  size: "1MB"
+  rows: 500
+  expected_result: "parsed"
+  description: "Valid Excel spreadsheet"
+
+TEST_4:
+  file: "notes.txt"
+  size: "100KB"
+  expected_result: "parsed"
+  description: "Valid text file"
+
+================================================================================
+TEST SCENARIOS - INVALID ATTACHMENTS
+================================================================================
+
+TEST_5:
+  file: "video.mp4"
+  size: "50MB"
+  expected_result: "error (unsupported format)"
+  description: "Video file not supported"
+
+TEST_6:
+  file: "image.jpg"
+  size: "2MB"
+  expected_result: "error (unsupported format)"
+  description: "Image file not supported"
+
+TEST_7:
+  file: "archive.zip"
+  size: "15MB"
+  expected_result: "error (file too large)"
+  description: "File exceeds size limit"
+
+TEST_8:
+  file: "corrupt.pdf"
+  size: "2MB"
+  status: "corrupted"
+  expected_result: "error (parsing failed)"
+  description: "Corrupted PDF file"
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: ATTACHMENT_PARSING_ENABLED = true
+DESC_1: Enable/disable attachment parsing
+
+PARAM_2: MAX_FILE_SIZE_MB = 10
+DESC_2: Maximum file size in MB
+
+PARAM_3: SUPPORTED_FORMATS = [".pdf", ".docx", ".xlsx", ".txt", ".csv"]
+DESC_3: List of supported file formats
+
+PARAM_4: ATTACHMENT_TIMEOUT_SECONDS = 30
+DESC_4: Timeout for file parsing operation
+
+PARAM_5: CACHE_PARSED_CONTENT = true
+DESC_5: Cache parsed content for repeated use
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: parse_attachment(attachment: AttachmentObject) -> ParsedContent
+
+FUNCTION_SIGNATURE:
+def parse_attachment(attachment: AttachmentObject) -> ParsedContent:
+    '''
+    Parse and extract content from attachment.
+
+    Args:
+        attachment: AttachmentObject with file data
+
+    Returns:
+        ParsedContent with extracted text
+    '''
+
+PARSERS NEEDED:
+1. PDF Parser (pypdf)
+2. DOCX Parser (python-docx)
+3. XLSX Parser (openpyxl)
+4. CSV Parser (csv module)
+5. Text Parser (basic file read)
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: PDF parsing extracts text correctly
+AC_2: Word document parsing works
+AC_3: Excel parsing extracts data
+AC_4: Text files parsed correctly
+AC_5: CSV files parsed correctly
+AC_6: File size limits enforced
+AC_7: Unsupported formats rejected
+AC_8: Corrupted files handled gracefully
+AC_9: Parsed content available to handlers
+AC_10: Error messages are user-friendly
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: LOW
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 3 story points / 1-2 days
+
+================================================================================

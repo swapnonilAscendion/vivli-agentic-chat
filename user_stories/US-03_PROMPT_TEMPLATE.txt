@@ -1,0 +1,206 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-03
+================================================================================
+
+USER STORY: Handle back-to-back and multi-context messages
+DESCRIPTION: Understand and process multiple messages sent in quick succession
+GOAL: Allow researchers to send multiple messages naturally without them being treated as separate unrelated queries
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 5 story points / 2-3 days
+
+================================================================================
+VALIDATION RULES
+================================================================================
+
+RULE_1: Check time window between messages (within 1 minute)
+RULE_2: Detect if messages share same context/intent
+RULE_3: Identify context switches between messages
+RULE_4: Preserve message order for conversation flow
+RULE_5: Group messages with same intent, separate different intents
+
+================================================================================
+ELIGIBLE CONDITIONS (Messages GROUPED)
+================================================================================
+
+1. Multiple messages within 1-minute window
+2. Messages share same intent category
+3. Messages from same researcher/user
+4. Messages in same chat session
+5. Consecutive messages without topic change
+
+================================================================================
+INELIGIBLE CONDITIONS (Messages SEPARATE)
+================================================================================
+
+1. Messages >1 minute apart (treat as separate queries)
+2. Messages with different intent categories
+3. Messages from different users
+4. Explicit context switch detected
+5. Unrelated topics between messages
+
+================================================================================
+ERROR MESSAGES
+================================================================================
+
+ERROR_1_TYPE: CONTEXT_MISMATCH
+ERROR_1_MESSAGE: "Your messages contain different topics. Please ask them separately for clearer responses."
+ERROR_1_WHEN: Multiple unrelated questions detected
+
+ERROR_2_TYPE: GROUPING_FAILED
+ERROR_2_MESSAGE: "Unable to process your messages together. Please resend individually."
+ERROR_2_WHEN: Message grouping algorithm fails
+
+ERROR_3_TYPE: TIMEOUT_EXPIRED
+ERROR_3_MESSAGE: "Message window expired. Please resend your question."
+ERROR_3_WHEN: Messages >1 minute apart detected
+
+================================================================================
+TEST SCENARIOS - GROUPED (Should GROUP)
+================================================================================
+
+TEST_1:
+  message_count: 3
+  time_window: "30 seconds"
+  intent: "same"
+  expected_result: "grouped"
+  description: "Three messages on same topic within 30 seconds"
+
+TEST_2:
+  message_count: 2
+  time_window: "45 seconds"
+  intent: "same"
+  expected_result: "grouped"
+  description: "Two follow-up messages within 45 seconds"
+
+TEST_3:
+  message_count: 4
+  time_window: "55 seconds"
+  intent: "same"
+  expected_result: "grouped"
+  description: "Four related messages within time window"
+
+================================================================================
+TEST SCENARIOS - SEPARATE (Should SEPARATE)
+================================================================================
+
+TEST_4:
+  message_count: 2
+  time_window: "2 minutes"
+  intent: "same"
+  expected_result: "separate"
+  description: "Messages 2 minutes apart (outside window)"
+
+TEST_5:
+  message_count: 3
+  time_window: "20 seconds"
+  intent: "mixed"
+  expected_result: "separate"
+  description: "Messages with different intents"
+
+TEST_6:
+  message_count: 2
+  time_window: "30 seconds"
+  intent: "different"
+  expected_result: "separate"
+  description: "Topic switch detected between messages"
+
+TEST_7:
+  message_count: 2
+  time_window: "15 seconds"
+  user_ids: ["researcher_001", "researcher_002"]
+  expected_result: "separate"
+  description: "Messages from different users"
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: MESSAGE_GROUPING_ENABLED = true
+DESC_1: Enable/disable message grouping feature
+
+PARAM_2: TIME_WINDOW_SECONDS = 60
+DESC_2: Time window for grouping messages (1 minute)
+
+PARAM_3: CONTEXT_SIMILARITY_THRESHOLD = 0.7
+DESC_3: Minimum similarity score to group messages
+
+PARAM_4: MAX_GROUPED_MESSAGES = 5
+DESC_4: Maximum messages to group together
+
+PARAM_5: CONTEXT_DETECTION_ENABLED = true
+DESC_5: Detect context switches and separate messages
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+ENTRY_POINT: group_back_to_back_messages(messages: List[ChatRequest]) -> List[List[ChatRequest]]
+
+FUNCTION_SIGNATURE:
+def group_back_to_back_messages(messages: List[ChatRequest]) -> List[List[ChatRequest]]:
+    '''
+    Group messages sent within time window that share context.
+
+    Args:
+        messages: List of ChatRequest objects in chronological order
+
+    Returns:
+        List of message groups (each group is a list of related messages)
+    '''
+
+INTEGRATION_POINT: /chat endpoint in main.py (before US-04)
+EXECUTION_STEP: After US-02 role validation, before intent classification
+
+DATA_SOURCES:
+1. Message timestamps
+2. Message content (for context detection)
+3. Intent classification (for grouping logic)
+4. User ID and chat session
+
+ALGORITHM:
+1. Sort messages by timestamp
+2. Iterate through messages
+3. Calculate time delta from previous message
+4. If within window AND similar context → add to current group
+5. If outside window OR different context → start new group
+6. Return grouped messages
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Message grouping logic is implemented and tested
+AC_2: Messages within 60s with same intent are grouped
+AC_3: Messages >60s apart are separated
+AC_4: Different intents force separation
+AC_5: Message order is preserved within groups
+AC_6: Multiple groups handled correctly
+AC_7: Unit tests cover all scenarios
+AC_8: Integration tests verify grouping in /chat
+AC_9: Documentation explains grouping rules
+AC_10: Edge cases (empty groups, single messages) handled
+
+================================================================================
+INTEGRATION SEQUENCE
+================================================================================
+
+Executes AFTER:
+1. US-02 (Role validation)
+
+Executes BEFORE:
+1. US-04 (Multiple questions)
+2. US-07 (Intent classification)
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: MEDIUM
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 5 story points / 2-3 days
+
+================================================================================

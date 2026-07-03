@@ -1,0 +1,241 @@
+================================================================================
+USER STORY TEMPLATE PROMPT - FILLED FOR US-11
+================================================================================
+
+USER STORY: Select and benchmark the LLM for Chat / RAG
+DESCRIPTION: Benchmark and select the best LLM model for the Chat/RAG system
+GOAL: Identify the model offering best balance of accuracy, cost, and hallucination control
+
+Date Created: 2026-07-03
+Status: Ready for Implementation
+Estimated Effort: 8 story points / 3-4 days
+
+================================================================================
+BASELINE MODEL
+================================================================================
+
+MODEL: GPT-4o-mini
+REASON: Strong balance of accuracy and cost for Chat/RAG use cases
+STATUS: Current baseline for comparison
+DECISION: Selected as starting point for benchmarking in Sprint 1
+
+================================================================================
+CANDIDATE MODELS
+================================================================================
+
+CANDIDATE_1: Phi-4-mini
+  Vendor: Microsoft
+  Strengths: Cost-effective, low latency
+  Evaluation: Accuracy, hallucination rate
+
+CANDIDATE_2: Mistral Small
+  Vendor: Mistral
+  Strengths: Open-source, competitive accuracy
+  Evaluation: Accuracy, cost-effectiveness
+
+CANDIDATE_3: GPT-5.4-mini
+  Vendor: OpenAI
+  Strengths: Latest, potentially better accuracy
+  Evaluation: Accuracy vs cost trade-off
+
+================================================================================
+EVALUATION METRICS
+================================================================================
+
+METRIC_1: Accuracy on Golden Dataset
+  Definition: Percentage of correct answers
+  Target: >= Baseline accuracy
+  Measurement: Manual evaluation + automated scoring
+
+METRIC_2: Hallucination Rate
+  Definition: % of answers containing false information
+  Target: < 5%
+  Measurement: Expert review of sample responses
+
+METRIC_3: Token Cost Per Response
+  Definition: Average tokens used * cost per token
+  Target: Competitive with or better than baseline
+  Measurement: API usage logs analysis
+
+METRIC_4: Latency (Response Time)
+  Definition: Time from query to complete response
+  Target: < 2 seconds average
+  Measurement: API response time monitoring
+
+METRIC_5: Groundedness Score
+  Definition: % of responses grounded in provided context
+  Target: >= 90%
+  Measurement: Automated + manual verification
+
+METRIC_6: User Preference
+  Definition: User satisfaction with response quality
+  Target: >= 4.0/5.0 rating
+  Measurement: User feedback survey
+
+================================================================================
+GOLDEN DATASET
+================================================================================
+
+DATASET_STATUS: To be created in Sprint 2
+REPRESENTATIVE_QUERIES: 200-300 representative questions
+CATEGORIES:
+  - FAQ questions (50 queries)
+  - Data request status (50 queries)
+  - Process/timeline questions (50 queries)
+  - Policy questions (50 queries)
+  - Edge cases (50 queries)
+
+MANUAL_EVALUATION: Expert annotators will rate:
+  - Correctness (0-1.0)
+  - Completeness (0-1.0)
+  - Clarity (0-1.0)
+  - Hallucination presence (yes/no)
+
+================================================================================
+SUCCESS CRITERIA
+================================================================================
+
+CRITERIA_1: Chosen model > baseline accuracy
+  Measurement: Golden dataset evaluation
+  Success: Test accuracy >= baseline
+
+CRITERIA_2: Hallucination rate < 5%
+  Measurement: Manual review of sample
+  Success: Hallucination rate <= 5%
+
+CRITERIA_3: Cost competitive with baseline
+  Measurement: Token cost analysis
+  Success: Cost <= baseline +10%
+
+CRITERIA_4: Latency acceptable (< 2s)
+  Measurement: API response timing
+  Success: p95 latency < 2 seconds
+
+CRITERIA_5: Groundedness >= 90%
+  Measurement: Context relevance check
+  Success: Grounded responses >= 90%
+
+================================================================================
+BENCHMARKING PROCESS
+================================================================================
+
+PHASE_1: Setup (Sprint 1)
+  - Integrate GPT-4o-mini as baseline
+  - Create test harness
+  - Define evaluation methodology
+
+PHASE_2: Golden Dataset (Sprint 2)
+  - Collect 200-300 representative queries
+  - Get expert annotations
+  - Establish baseline scores
+
+PHASE_3: Candidate Testing (Sprint 2-3)
+  - Run each candidate model
+  - Measure all metrics
+  - Collect user feedback
+
+PHASE_4: Analysis & Decision (Sprint 3)
+  - Compare results to baseline
+  - Analyze cost/accuracy trade-offs
+  - Document findings
+  - Make selection decision
+
+PHASE_5: Implementation (Sprint 3)
+  - Deploy selected model
+  - Update configuration
+  - Monitor in production
+
+================================================================================
+EVALUATION FRAMEWORK
+================================================================================
+
+SCORING_FORMULA:
+  Score = (Accuracy * 0.40) + (Cost_Score * 0.30) + (Latency_Score * 0.20) + (Hallucination_Score * 0.10)
+
+WHERE:
+  - Accuracy_Score: 0-1.0 (normalized)
+  - Cost_Score: 0-1.0 (1.0 = equal/cheaper than baseline)
+  - Latency_Score: 0-1.0 (1.0 = < 2s)
+  - Hallucination_Score: 0-1.0 (1.0 = < 5% hallucination)
+
+DECISION_RULE:
+  IF (chosen_score > baseline_score AND hallucination_rate < 5%) THEN select_model
+
+================================================================================
+RISK MITIGATION
+================================================================================
+
+RISK_1: Golden dataset not representative
+  Mitigation: Diverse query types, expert validation
+
+RISK_2: Hallucination not detected
+  Mitigation: Multiple evaluators, automated checks
+
+RISK_3: Cost higher than expected
+  Mitigation: Request dedicated pricing, volume discounts
+
+RISK_4: Model performance varies over time
+  Mitigation: Regular re-evaluation, monitoring
+
+================================================================================
+CONFIGURATION PARAMETERS
+================================================================================
+
+PARAM_1: BASELINE_MODEL = "GPT-4o-mini"
+DESC_1: Model to use as baseline for comparison
+
+PARAM_2: CANDIDATE_MODELS = ["Phi-4-mini", "Mistral Small", "GPT-5.4-mini"]
+DESC_2: Models to evaluate
+
+PARAM_3: ACCURACY_THRESHOLD = 0.85
+DESC_3: Minimum accuracy to pass evaluation
+
+PARAM_4: HALLUCINATION_THRESHOLD = 0.05
+DESC_4: Maximum acceptable hallucination rate
+
+PARAM_5: LATENCY_THRESHOLD_SECONDS = 2
+DESC_5: Maximum acceptable response time
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+HARNESS_COMPONENTS:
+1. Query Loader (load golden dataset)
+2. Model Integrations (connect to each LLM)
+3. Response Evaluator (accuracy, hallucination)
+4. Metrics Collector (cost, latency)
+5. Report Generator (summary + detailed)
+
+TESTING_FRAMEWORK:
+- Run each model against golden dataset
+- Measure all metrics
+- Generate comparison report
+- Enable side-by-side evaluation
+
+================================================================================
+ACCEPTANCE CRITERIA
+================================================================================
+
+AC_1: Baseline model integrated
+AC_2: All 3 candidate models integrated
+AC_3: Golden dataset created
+AC_4: Evaluation harness working
+AC_5: All metrics measurable
+AC_6: Comparison report generated
+AC_7: User feedback collected
+AC_8: Selection decision documented
+AC_9: Chosen model deployed
+AC_10: Production monitoring configured
+
+================================================================================
+REFERENCE INFORMATION
+================================================================================
+
+TEMPLATE_VERSION: 1.0
+CREATED: 2026-07-03
+PRIORITY: HIGH (blocks production readiness)
+STATUS: READY FOR IMPLEMENTATION
+ESTIMATED_EFFORT: 8 story points / 3-4 days
+
+================================================================================
